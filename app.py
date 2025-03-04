@@ -10,24 +10,39 @@ st.title("Multi-Model RAG-Powered Article Chatbot 📄🔍")
 # Sidebar Settings
 st.sidebar.title("Settings")
 
-# Model options and their details
+# Optimized Model List for PDF & Research Article RAG
 models = {
+    # ✅ DeepSeek Models (Efficient for RAG, Optimized for Speed & Scalability)
     "deepseek-r1-distill-llama-70b": {
         "requests_per_minute": 30,
         "requests_per_day": 1_000,
-        "tokens_per_minute": 6_000,  # Unlimited token capacity
+        "tokens_per_minute": 6_000,
         "tokens_per_day": None,  # Unlimited token capacity
         "advantages": "Highly optimized for low latency with no token limits, making it ideal for large-scale deployments.",
         "disadvantages": "Limited daily requests compared to other models.",
     },
+
+    # ✅ Alibaba Cloud Qwen Models (Top-tier Open-Source Models for RAG)
+    "qwen-2.5-32b": {
+        "requests_per_minute": 30,
+        "requests_per_day": 14_400,
+        "tokens_per_minute": 10_000,
+        "tokens_per_day": 500_000,
+        "advantages": "Powerful 32B model optimized for long-context comprehension and reasoning.",
+        "disadvantages": "Requires more computational resources.",
+    },
+
+    # ✅ Google’s Gemma Model (High Throughput & Fast Inference)
     "gemma2-9b-it": {
         "requests_per_minute": 30,
         "requests_per_day": 14_400,
         "tokens_per_minute": 15_000,
         "tokens_per_day": 500_000,
         "advantages": "Higher token throughput, suitable for large-scale, fast inference.",
-        "disadvantages": "Limited versatility compared to the larger Llama3 models.",
+        "disadvantages": "Limited versatility compared to larger LLaMA3 models.",
     },
+
+    # ✅ Meta’s LLaMA 3 Models (Best for Long-Context RAG Applications)
     "llama-3.1-8b-instant": {
         "requests_per_minute": 30,
         "requests_per_day": 14_400,
@@ -36,68 +51,20 @@ models = {
         "advantages": "High-speed processing with large token capacity, great for real-time applications.",
         "disadvantages": "Less accurate for complex reasoning tasks compared to larger models.",
     },
-    "llama-3.2-11b-vision-preview": {
-        "requests_per_minute": 30,
-        "requests_per_day": 7_000,
-        "tokens_per_minute": 7_000,
-        "tokens_per_day": 500_000,
-        "advantages": "Specialized for visual input tasks and vision-based queries.",
-        "disadvantages": "Lower overall token capacity compared to other models.",
-    },
-    "llama-3.2-1b-preview": {
-        "requests_per_minute": 30,
-        "requests_per_day": 7_000,
-        "tokens_per_minute": 7_000,
-        "tokens_per_day": 500_000,
-        "advantages": "Lightweight model, efficient for small queries and quick responses.",
-        "disadvantages": "Limited versatility for large or complex tasks.",
-    },
-    "llama-3.2-3b-preview": {
-        "requests_per_minute": 30,
-        "requests_per_day": 7_000,
-        "tokens_per_minute": 7_000,
-        "tokens_per_day": 500_000,
-        "advantages": "Mid-tier model with balanced performance and scalability.",
-        "disadvantages": "Moderate token capacity for mid-sized queries.",
-    },
-    "llama-3.2-90b-vision-preview": {
-        "requests_per_minute": 15,
-        "requests_per_day": 3_500,
-        "tokens_per_minute": 7_000,
-        "tokens_per_day": 250_000,
-        "advantages": "Powerful vision-enhanced model for complex visual and text-based reasoning.",
-        "disadvantages": "Low throughput compared to other vision-based models.",
-    },
-    "llama-3.3-70b-specdec": {
-        "requests_per_minute": 30,
-        "requests_per_day": 1_000,
-        "tokens_per_minute": 6_000,
-        "tokens_per_day": 100_000,
-        "advantages": "Specialized for decision-making tasks with precision.",
-        "disadvantages": "Limited token capacity and lower throughput.",
-    },
     "llama-3.3-70b-versatile": {
         "requests_per_minute": 30,
         "requests_per_day": 1_000,
         "tokens_per_minute": 6_000,
         "tokens_per_day": 100_000,
         "advantages": "Versatile model optimized for high accuracy in diverse scenarios.",
-        "disadvantages": "Low throughput and limited scalability.",
-    },
-    "llama-guard-3-8b": {
-        "requests_per_minute": 30,
-        "requests_per_day": 14_400,
-        "tokens_per_minute": 15_000,
-        "tokens_per_day": 500_000,
-        "advantages": "Designed for content moderation and safeguarding use cases.",
-        "disadvantages": "Less optimized for general-purpose or creative tasks.",
+        "disadvantages": "Lower throughput compared to some smaller models.",
     },
     "llama3-70b-8192": {
         "requests_per_minute": 30,
         "requests_per_day": 14_400,
         "tokens_per_minute": 6_000,
         "tokens_per_day": 500_000,
-        "advantages": "Long-context capabilities, ideal for extended conversations.",
+        "advantages": "Long-context capabilities, ideal for handling detailed research papers and articles.",
         "disadvantages": "Moderate speed and accuracy for shorter tasks.",
     },
     "llama3-8b-8192": {
@@ -108,31 +75,50 @@ models = {
         "advantages": "Supports high-speed inference with long-context support.",
         "disadvantages": "Slightly less accurate for complex reasoning compared to larger models.",
     },
+
+    # ✅ Mistral AI (Best for Multi-Turn Chat & Retrieval-Based Augmentation)
+    "mistral-saba-24b": {
+        "requests_per_minute": 30,
+        "requests_per_day": 7_000,
+        "tokens_per_minute": 7_000,
+        "tokens_per_day": 250_000,
+        "advantages": "Strong multi-turn conversation capabilities and effective retrieval augmentation.",
+        "disadvantages": "Limited token capacity compared to LLaMA-70B.",
+    },
     "mixtral-8x7b-32768": {
         "requests_per_minute": 30,
         "requests_per_day": 14_400,
         "tokens_per_minute": 5_000,
         "tokens_per_day": 500_000,
-        "advantages": "Multi-modal capabilities for handling diverse input types (text and vision).",
-        "disadvantages": "Lower token throughput compared to other multi-modal models.",
+        "advantages": "Supports long document processing for better contextual understanding.",
+        "disadvantages": "Lower token throughput compared to some other models.",
     },
 }
 
-# Select model
-model_name = st.sidebar.selectbox(
-    "Choose Llama3 Model",
+# Allow users to select multiple models
+selected_models = st.sidebar.multiselect(
+    "Choose Models",
     options=list(models.keys()),
-    format_func=lambda x: f"{x}",
+    default=["llama3-70b-8192"],  # Default model selection
 )
 
-# Display selected model details
-selected_model = models[model_name]
-st.sidebar.write(f"### Model Details: {model_name}")
-for key, value in selected_model.items():
-    if key != "advantages" and key != "disadvantages":
-        st.sidebar.write(f"- **{key.replace('_', ' ').title()}**: {value}")
-st.sidebar.write(f"- **Advantages**: {selected_model['advantages']}")
-st.sidebar.write(f"- **Disadvantages**: {selected_model['disadvantages']}")
+# If no model is selected, set a fallback default model
+if not selected_models:
+    selected_models = ["llama3-70b-8192"]  # Default model to prevent errors
+
+# Display details for all selected models
+st.sidebar.write("## Selected Model Details")
+for model_name in selected_models:
+    selected_model = models[model_name]
+    st.sidebar.write(f"### {model_name}")
+    
+    for key, value in selected_model.items():
+        if key not in ["advantages", "disadvantages"]:
+            st.sidebar.write(f"- **{key.replace('_', ' ').title()}**: {value}")
+    
+    st.sidebar.write(f"- **Advantages**: {selected_model['advantages']}")
+    st.sidebar.write(f"- **Disadvantages**: {selected_model['disadvantages']}")
+    st.sidebar.write("---")  # Add a separator for clarity
 
 # Temperature slider with explanation
 st.sidebar.markdown(
@@ -303,11 +289,18 @@ if content and "Error" not in content:
             context_docs = retriever.get_relevant_documents(prompt) if retriever else []
             context = " ".join([doc.page_content for doc in context_docs]) if context_docs else ""
 
-            response, st.session_state["conversation_history"] = ask_question(
-                st.session_state["chain"], prompt, context, st.session_state["conversation_history"]
-            )
+            # Store responses from different models
+            responses = {}
 
-            with st.chat_message("assistant"):
-                with st.spinner("Thinking..."):
-                    st.write(response)
-                st.session_state["messages"].append({"role": "assistant", "content": response})
+            for model in selected_models:
+                chain = get_chain(model, temperature)  # Get the chain for each model
+                response, _ = ask_question(chain, prompt, context, st.session_state["conversation_history"])
+                responses[model] = response  # Store responses
+
+            # Display responses from all selected models
+            for model, response in responses.items():
+                with st.chat_message("assistant"):
+                    st.markdown(f"### Response from {model}:")
+                    with st.spinner("Thinking..."):
+                        st.write(response)
+                st.session_state["messages"].append({"role": "assistant", "content": f"**{model}**: {response}"})

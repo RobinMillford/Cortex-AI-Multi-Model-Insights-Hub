@@ -4,34 +4,36 @@ This project creates a **Retrieve-and-Generate (RAG)** powered chatbot for summa
 
 The project is deployed on **Streamlit Cloud**, allowing users to interact with the chatbot via an easy-to-use interface.
 
-## Features
+---
 
-- **PDF/URL Upload**: Upload a PDF file or provide a URL containing an article.
-- **Text Extraction**: The app extracts text content from the uploaded document or webpage.
-- **Chunking & Embeddings**: The extracted text is split into smaller chunks, and embeddings are generated for efficient search.
-- **Vector Database**: The embeddings are stored in a vector database for fast retrieval.
-- **LLM Integration**: Queries are processed using the **ChatGroq** LLM for generating contextually relevant answers.
-- **Conversation History**: Users can continue the chat with the chatbot, as it stores conversation history and context.
-- **Changeable LLM Models**: There is an option to switch between different LLM models for generating responses.
-- **Deployable on Streamlit**: The app is deployed on Streamlit Cloud for easy access and interaction.
+## 📌 **Features**
 
-### Supported Models
+- **📂 PDF/URL Upload**: Upload a PDF file or provide a URL containing an article.
+- **📖 Text Extraction**: The app extracts text content from the uploaded document or webpage.
+- **📑 Chunking & Embeddings**: The extracted text is split into smaller chunks, and embeddings are generated for efficient search.
+- **⚡ Vector Database**: The embeddings are stored in a vector database for fast retrieval.
+- **🧠 LLM Integration**: Queries are processed using the **ChatGroq** LLM for generating contextually relevant answers.
+- **💬 Conversation History**: Users can continue the chat with the chatbot, as it stores conversation history and context.
+- **🔄 Changeable LLM Models**: There is an option to switch between different LLM models for generating responses.
+- **🤖 Multi-Model Chat**: Users can **select multiple models** at once and compare responses side by side.
+- **🚀 Deployable on Streamlit**: The app is deployed on **Streamlit Cloud** for easy access and interaction.
 
-| Model                         | Requests per Minute | Requests per Day | Tokens per Minute | Tokens per Day | Advantages                                                   | Disadvantages                        |
-| ----------------------------- | ------------------- | ---------------- | ----------------- | -------------- | ------------------------------------------------------------ | ------------------------------------ |
-| deepseek-r1-distill-llama-70b | 30                  | 1,000            | 6,000             | Unlimited      | Unlimited token capacity, low latency                        | Limited daily requests               |
-| gemma2-9b-it                  | 30                  | 14,400           | 15,000            | 500,000        | High throughput, suitable for large-scale inference          | Limited versatility                  |
-| llama-3.1-8b-instant          | 30                  | 14,400           | 20,000            | 500,000        | High-speed processing, great for real-time applications      | Less accurate for complex reasoning  |
-| llama-3.2-11b-vision-preview  | 30                  | 7,000            | 7,000             | 500,000        | Specialized for visual input tasks                           | Lower token capacity                 |
-| llama-3.2-1b-preview          | 30                  | 7,000            | 7,000             | 500,000        | Lightweight and efficient for small queries                  | Limited versatility                  |
-| llama-3.2-3b-preview          | 30                  | 7,000            | 7,000             | 500,000        | Balanced performance and scalability                         | Moderate token capacity              |
-| llama-3.2-90b-vision-preview  | 15                  | 3,500            | 7,000             | 250,000        | Complex visual and text reasoning                            | Low throughput                       |
-| llama-3.3-70b-specdec         | 30                  | 1,000            | 6,000             | 100,000        | Precision-focused for decision-making                        | Limited token capacity               |
-| llama-3.3-70b-versatile       | 30                  | 1,000            | 6,000             | 100,000        | Versatile for high-accuracy scenarios                        | Low throughput                       |
-| llama-guard-3-8b              | 30                  | 14,400           | 15,000            | 500,000        | Designed for safeguarding and content moderation             | Not optimized for creative tasks     |
-| llama3-70b-8192               | 30                  | 14,400           | 6,000             | 500,000        | Long-context, ideal for extended conversations               | Moderate speed and accuracy          |
-| llama3-8b-8192                | 30                  | 14,400           | 20,000            | 500,000        | High-speed inference with long-context support               | Slightly less accurate for reasoning |
-| mixtral-8x7b-32768            | 30                  | 14,400           | 5,000             | 500,000        | Multi-modal capabilities for diverse input (text and vision) | Lower token throughput               |
+---
+
+## 🚀 **Supported Models**
+
+| Model                         | Requests per Minute | Requests per Day | Tokens per Minute | Tokens per Day | Advantages                                                            | Disadvantages                        |
+| ----------------------------- | ------------------- | ---------------- | ----------------- | -------------- | --------------------------------------------------------------------- | ------------------------------------ |
+| deepseek-r1-distill-llama-70b | 30                  | 1,000            | 6,000             | Unlimited      | Unlimited token capacity, low latency                                 | Limited daily requests               |
+| gemma2-9b-it                  | 30                  | 14,400           | 15,000            | 500,000        | High throughput, suitable for large-scale inference                   | Limited versatility                  |
+| llama-3.1-8b-instant          | 30                  | 14,400           | 20,000            | 500,000        | High-speed processing, great for real-time applications               | Less accurate for complex reasoning  |
+| llama-3.3-70b-specdec         | 30                  | 1,000            | 6,000             | 100,000        | Precision-focused for decision-making                                 | Limited token capacity               |
+| llama-3.3-70b-versatile       | 30                  | 1,000            | 6,000             | 100,000        | Versatile for high-accuracy scenarios                                 | Low throughput                       |
+| llama3-70b-8192               | 30                  | 14,400           | 6,000             | 500,000        | Long-context, ideal for extended conversations                        | Moderate speed and accuracy          |
+| llama3-8b-8192                | 30                  | 14,400           | 20,000            | 500,000        | High-speed inference with long-context support                        | Slightly less accurate for reasoning |
+| mixtral-8x7b-32768            | 30                  | 14,400           | 5,000             | 500,000        | Supports long document processing for better contextual understanding | Lower token throughput               |
+
+---
 
 ## How It Works
 
