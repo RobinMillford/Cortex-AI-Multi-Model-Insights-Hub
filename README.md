@@ -111,7 +111,7 @@ streamlit run app.py
 
 Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
-[Streamlit Deployed Demo](https://multi-model-rag-powered-article-chatbot.streamlit.app/)
+[Streamlit Deployed Demo](https://cortex-ai-multi-model-insights-app.streamlit.app/)
 
 ![Demo Image 1](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Llama3-RAG-Chatbot-1.png)
 ![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Llama3-RAG-Chatbot-2.png)
