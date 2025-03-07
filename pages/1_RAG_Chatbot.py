@@ -21,7 +21,6 @@ models = {
         "advantages": "Highly optimized for low latency with no token limits, making it ideal for large-scale deployments.",
         "disadvantages": "Limited daily requests compared to other models.",
     },
-
     # ✅ Alibaba Cloud Qwen Models (Top-tier Open-Source Models for RAG)
     "qwen-2.5-32b": {
         "requests_per_minute": 30,
@@ -31,7 +30,6 @@ models = {
         "advantages": "Powerful 32B model optimized for long-context comprehension and reasoning.",
         "disadvantages": "Requires more computational resources.",
     },
-
     # ✅ Google’s Gemma Model (High Throughput & Fast Inference)
     "gemma2-9b-it": {
         "requests_per_minute": 30,
@@ -41,7 +39,6 @@ models = {
         "advantages": "Higher token throughput, suitable for large-scale, fast inference.",
         "disadvantages": "Limited versatility compared to larger LLaMA3 models.",
     },
-
     # ✅ Meta’s LLaMA 3 Models (Best for Long-Context RAG Applications)
     "llama-3.1-8b-instant": {
         "requests_per_minute": 30,
@@ -75,7 +72,6 @@ models = {
         "advantages": "Supports high-speed inference with long-context support.",
         "disadvantages": "Slightly less accurate for complex reasoning compared to larger models.",
     },
-
     # ✅ Mistral AI (Best for Multi-Turn Chat & Retrieval-Based Augmentation)
     "mistral-saba-24b": {
         "requests_per_minute": 30,
@@ -102,23 +98,21 @@ selected_models = st.sidebar.multiselect(
     default=["llama3-70b-8192"],  # Default model selection
 )
 
-# If no model is selected, set a fallback default model
+# Fallback default if no model is selected
 if not selected_models:
-    selected_models = ["llama3-70b-8192"]  # Default model to prevent errors
+    selected_models = ["llama3-70b-8192"]
 
 # Display details for all selected models
 st.sidebar.write("## Selected Model Details")
 for model_name in selected_models:
     selected_model = models[model_name]
     st.sidebar.write(f"### {model_name}")
-    
     for key, value in selected_model.items():
         if key not in ["advantages", "disadvantages"]:
             st.sidebar.write(f"- **{key.replace('_', ' ').title()}**: {value}")
-    
     st.sidebar.write(f"- **Advantages**: {selected_model['advantages']}")
     st.sidebar.write(f"- **Disadvantages**: {selected_model['disadvantages']}")
-    st.sidebar.write("---")  # Add a separator for clarity
+    st.sidebar.write("---")  # Separator for clarity
 
 # Temperature slider with explanation
 st.sidebar.markdown(
@@ -133,7 +127,7 @@ st.sidebar.markdown(
 temperature = st.sidebar.slider(
     label="Temperature",
     min_value=0.0,
-    max_value=2.0,  # Updated to extend the range to 2.0
+    max_value=2.0,  # Extended range to 2.0
     value=0.7,
     step=0.1,
     help="Adjust the randomness of the model's responses. Lower values = more focused; higher values = more creative."
@@ -175,19 +169,21 @@ chunk_overlap = st.sidebar.slider(
     help="Control the overlap of consecutive content chunks. Larger values improve context but may slow down processing."
 )
 
-# Initialize Session State Variables
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How may I assist you today?"}]
+# -----------------------------
+# Namespaced Session State Keys
+# -----------------------------
+if "rag_messages" not in st.session_state:
+    st.session_state["rag_messages"] = [{"role": "assistant", "content": "How may I assist you today?"}]
 
-if "conversation_history" not in st.session_state:
-    st.session_state["conversation_history"] = ""
+if "rag_conversation_history" not in st.session_state:
+    st.session_state["rag_conversation_history"] = ""
 
-if "vector_store" not in st.session_state:
-    st.session_state["vector_store"] = None
+if "rag_vector_store" not in st.session_state:
+    st.session_state["rag_vector_store"] = None
 
-if "chain" not in st.session_state or st.session_state.get("selected_model") != model_name:
-    st.session_state["chain"] = get_chain(model_name, temperature)
-    st.session_state["selected_model"] = model_name
+if "rag_chain" not in st.session_state or st.session_state.get("rag_selected_model") != selected_models[0]:
+    st.session_state["rag_chain"] = get_chain(selected_models[0], temperature)
+    st.session_state["rag_selected_model"] = selected_models[0]
 
 # Reset App Function
 def reset_app():
@@ -208,7 +204,9 @@ if st.session_state.get("reset", False):
     st.session_state["reset"] = False
     st.rerun()
 
+# -----------------------------
 # Content Upload Section
+# -----------------------------
 st.sidebar.title("Upload Content")
 input_method = st.sidebar.radio("Input Method", ["PDF File", "URL"])
 content = None
@@ -232,7 +230,7 @@ def cached_process_content(content, chunk_size, chunk_overlap):
 def cached_create_vector_store(_chunks):
     return create_vector_store(_chunks)
 
-# Cache chain setup
+# Cache chain setup (if needed)
 @cache_resource
 def cached_get_chain(model_name, temperature):
     return get_chain(model_name, temperature)
@@ -269,20 +267,21 @@ if content and "Error" not in content:
             unsafe_allow_html=True,
         )
 
-        if st.session_state["vector_store"] is None:
-            st.session_state["vector_store"] = cached_create_vector_store(chunks)
+        if st.session_state["rag_vector_store"] is None:
+            st.session_state["rag_vector_store"] = cached_create_vector_store(chunks)
 
-        retriever = st.session_state["vector_store"].as_retriever()
+        retriever = st.session_state["rag_vector_store"].as_retriever()
 
         st.write("---")
         st.header("Chat with the Content 🤖")
 
-        for message in st.session_state["messages"]:
+        # Display conversation using namespaced messages
+        for message in st.session_state["rag_messages"]:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
 
         if prompt := st.chat_input("Ask a question about the content:"):
-            st.session_state["messages"].append({"role": "user", "content": prompt})
+            st.session_state["rag_messages"].append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.write(prompt)
 
@@ -291,10 +290,9 @@ if content and "Error" not in content:
 
             # Store responses from different models
             responses = {}
-
             for model in selected_models:
                 chain = get_chain(model, temperature)  # Get the chain for each model
-                response, _ = ask_question(chain, prompt, context, st.session_state["conversation_history"])
+                response, _ = ask_question(chain, prompt, context, st.session_state["rag_conversation_history"])
                 responses[model] = response  # Store responses
 
             # Display responses from all selected models
@@ -303,4 +301,4 @@ if content and "Error" not in content:
                     st.markdown(f"### Response from {model}:")
                     with st.spinner("Thinking..."):
                         st.write(response)
-                st.session_state["messages"].append({"role": "assistant", "content": f"**{model}**: {response}"})
+                st.session_state["rag_messages"].append({"role": "assistant", "content": f"**{model}**: {response}"})

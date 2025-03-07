@@ -13,3 +13,8 @@ PyMuPDF==1.25.2
 newspaper3k==0.2.8
 lxml_html_clean
 docarray
+tabulate
+xlrd
+openpyxl
+matplotlib
+langchain_experimental
