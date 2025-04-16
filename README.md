@@ -22,23 +22,24 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 
 ## 🚀 **Supported Models**
 
-| Model                         | RPM  | RPD    | Tokens/Min | Tokens/Day | Advantages                                                            | Disadvantages                        |
-| ----------------------------- | ---- | ------ | ---------- | ---------- | --------------------------------------------------------------------- | ------------------------------------ |
-| deepseek-r1-distill-llama-70b | 30   | 1,000  | 6,000      | Unlimited  | Highly optimized for low latency with unlimited token capacity.       | Limited daily requests.              |
-| qwen-2.5-32b                  | 30   | 14,400 | 10,000     | 500,000    | Powerful 32B model optimized for long-context comprehension.          | Requires more computational resources. |
-| gemma2-9b-it                  | 30   | 14,400 | 15,000     | 500,000    | High token throughput, suitable for fast inference on large-scale tasks.| Limited versatility compared to larger models. |
-| llama-3.1-8b-instant          | 30   | 14,400 | 20,000     | 500,000    | High-speed processing with large token capacity, ideal for real-time apps. | Less accurate for complex reasoning. |
-| llama-3.3-70b-versatile       | 30   | 1,000  | 6,000      | 100,000    | Versatile model optimized for high accuracy in diverse scenarios.       | Lower throughput compared to smaller models. |
-| llama3-70b-8192               | 30   | 14,400 | 6,000      | 500,000    | Long-context capabilities, perfect for detailed research articles.      | Moderate speed and accuracy for shorter tasks. |
-| llama3-8b-8192                | 30   | 14,400 | 20,000     | 500,000    | High-speed inference with extensive long-context support.             | Slightly less accurate for complex reasoning. |
-| mistral-saba-24b              | 30   | 7,000  | 7,000      | 250,000    | Excellent for multi-turn conversations and effective retrieval augmentation. | Limited token capacity compared to larger models. |
-| mixtral-8x7b-32768            | 30   | 14,400 | 5,000      | 500,000    | Optimized for processing long documents with superior contextual understanding. | Lower token throughput.              |
+| Model                         | RPM | RPD    | Tokens/Min | Tokens/Day | Advantages                                                                      | Disadvantages                                     |
+| ----------------------------- | --- | ------ | ---------- | ---------- | ------------------------------------------------------------------------------- | ------------------------------------------------- |
+| deepseek-r1-distill-llama-70b | 30  | 1,000  | 6,000      | Unlimited  | Highly optimized for low latency with unlimited token capacity.                 | Limited daily requests.                           |
+| qwen-2.5-32b                  | 30  | 14,400 | 10,000     | 500,000    | Powerful 32B model optimized for long-context comprehension.                    | Requires more computational resources.            |
+| gemma2-9b-it                  | 30  | 14,400 | 15,000     | 500,000    | High token throughput, suitable for fast inference on large-scale tasks.        | Limited versatility compared to larger models.    |
+| llama-3.1-8b-instant          | 30  | 14,400 | 20,000     | 500,000    | High-speed processing with large token capacity, ideal for real-time apps.      | Less accurate for complex reasoning.              |
+| llama-3.3-70b-versatile       | 30  | 1,000  | 6,000      | 100,000    | Versatile model optimized for high accuracy in diverse scenarios.               | Lower throughput compared to smaller models.      |
+| llama3-70b-8192               | 30  | 14,400 | 6,000      | 500,000    | Long-context capabilities, perfect for detailed research articles.              | Moderate speed and accuracy for shorter tasks.    |
+| llama3-8b-8192                | 30  | 14,400 | 20,000     | 500,000    | High-speed inference with extensive long-context support.                       | Slightly less accurate for complex reasoning.     |
+| mistral-saba-24b              | 30  | 7,000  | 7,000      | 250,000    | Excellent for multi-turn conversations and effective retrieval augmentation.    | Limited token capacity compared to larger models. |
+| mixtral-8x7b-32768            | 30  | 14,400 | 5,000      | 500,000    | Optimized for processing long documents with superior contextual understanding. | Lower token throughput.                           |
 
 ---
 
 ## How It Works
 
 ### Article Chatbot
+
 1. **User Input**: Upload a PDF file or provide a URL to an article or document.
 2. **Text Extraction**: The system automatically extracts text from your document or webpage.
 3. **Chunking & Embeddings**: The extracted text is segmented into smaller chunks, and embeddings are generated using advanced LLM techniques.
@@ -48,14 +49,15 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 7. **Model Switching & Comparison**: Easily switch between LLM models or run them concurrently to compare their outputs.
 
 ### Data Analysis Chatbot
+
 1. **Data Upload**: Upload data files in various formats (CSV, Excel, JSON, Parquet) via the dedicated Data Analysis page.
 2. **Data Processing**: The app processes and previews your data for further analysis.
 3. **Interactive Analysis**: Use the AI-driven chat interface to ask questions, generate visualizations, and analyze your data.
 4. **Dynamic Visualizations**: Receive Python code for generating plots and visualizations, ensuring that your data insights are both accurate and engaging.
 
-![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Uml%20Diagram.png)
+![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml%20Diagram.png)
 
-![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Uml_diagram_2.png)
+![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml_diagram_2.png)
 
 ---
 
@@ -113,9 +115,9 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
 [Streamlit Deployed Demo](https://cortex-ai-multi-model-insights-app.streamlit.app/)
 
-![Demo Image 1](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Llama3-RAG-Chatbot-1.png)
-![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Llama3-RAG-Chatbot-2.png)
-![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png)
+![Demo Image 1](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-1.png)
+![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-2.png)
+![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png)
 
 ---
 

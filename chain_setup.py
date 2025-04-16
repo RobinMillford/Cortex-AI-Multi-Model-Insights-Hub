@@ -2,22 +2,30 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.caches import BaseCache
+from langchain_core.callbacks import Callbacks  # Import Callbacks
 import os
 
 # Load environment variables
 load_dotenv()
 groq_api_key = os.getenv("GROQ_API_KEY")
+print("GROQ_API_KEY:", groq_api_key)  # Debug
+
+# Rebuild ChatGroq model to resolve Pydantic issue
+ChatGroq.model_rebuild()
 
 def get_chain(model_name, temperature=0.7):
     """
     Creates a chain with the specified model and temperature.
     """
+    print("Initializing ChatGroq with model:", model_name)  # Debug
     # Initialize ChatGroq
     lama = ChatGroq(
         temperature=temperature,
         groq_api_key=groq_api_key,
         model_name=model_name,
     )
+    print("ChatGroq initialized successfully")  # Debug
 
     # Output parser
     parser = StrOutputParser()

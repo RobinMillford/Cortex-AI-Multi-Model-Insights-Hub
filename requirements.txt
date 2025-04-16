@@ -18,3 +18,4 @@ xlrd
 openpyxl
 matplotlib
 langchain_experimental
+pydantic
