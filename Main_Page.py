@@ -39,7 +39,6 @@ st.markdown(
 st.markdown('<div class="main-title">Cortex AI: Multi-Model Insights Hub</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Empowering your research, analysis, and data exploration with multiple AI models</div>', unsafe_allow_html=True)
 
-
 # Description Section
 st.markdown(
     """
@@ -47,8 +46,9 @@ st.markdown(
         Welcome to Cortex AI Hub, your one-stop platform for leveraging advanced AI models for multi-model retrieval, 
         interactive research, and dynamic data analysis. Our platform offers:
         <ul style="list-style-type:square; display: inline-block; text-align: left;">
-            <li><strong>Article Chatbot</strong> – Engage with RAG-powered insights to explore research articles.</li>
+            <li><strong>Search Agent</strong> – Engage with AI-powered insights to explore research articles and news.</li>
             <li><strong>Data Analysis Chatbot</strong> – Visualize and analyze your data with AI-driven assistance.</li>
+            <li><strong>Search Agent Bot</strong> – Discover insights with an advanced AI-powered search assistant.</li>
         </ul>
         <br>
         Select a page from the sidebar to get started!
@@ -57,12 +57,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Additional Footer or Info Section
+# Footer
 st.markdown(
     """
     <div class="page-info">
-        © 2025 Cortex AI Hub • Built with Streamlit &amp; advanced AI models
+        © 2025 Cortex AI Hub • Built with Streamlit & advanced AI models
     </div>
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown('</div>', unsafe_allow_html=True)
