@@ -16,6 +16,7 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 - **💬 Persistent Conversation History**: Maintain conversation continuity with stored dialogue history.
 - **🔄 Flexible Model Selection**: Easily switch between different LLMs or compare outputs by selecting multiple models simultaneously.
 - **📊 Data Analysis Chatbot**: Interactively visualize and analyze your data with AI-driven assistance on a dedicated page.
+- **🔍 Search Agent Bot**: Discover insights from research articles, recent news, and general queries using an AI-powered search assistant.
 - **🚀 Scalable Streamlit Cloud Deployment**: Access the platform through a responsive, cloud-hosted interface for global reach.
 
 ---
@@ -54,6 +55,14 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 2. **Data Processing**: The app processes and previews your data for further analysis.
 3. **Interactive Analysis**: Use the AI-driven chat interface to ask questions, generate visualizations, and analyze your data.
 4. **Dynamic Visualizations**: Receive Python code for generating plots and visualizations, ensuring that your data insights are both accurate and engaging.
+
+### Search Agent Bot
+
+1. **User Query**: Enter a question or topic (e.g., recent news, research papers, or definitions like "What is MCP?") via the dedicated Search Agent page.
+2. **Tool Integration**: The bot leverages external tools (e.g., Arxiv, Wikipedia, Tavily) to fetch relevant, up-to-date information.
+3. **Context-Aware Responses**: The system processes queries with multi-LLM integration, delivering concise, accurate answers based on recent data (e.g., past 30 days for news).
+4. **Conversation Continuity**: Maintains dialogue history for context-aware follow-up questions.
+5. **Model Selection**: Choose from multiple LLMs to tailor the response style and depth, with options to retry searches for better results.
 
 ![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml%20Diagram.png)
 
@@ -97,6 +106,7 @@ Create a `.env` file in the root directory and add your ChatGroq API key:
 
 ```
 GROQ_API_KEY=your_chatgroq_api_key
+TAVILY_API_KEY=your_tavily_api_key
 ```
 
 Replace `your_chatgroq_api_key` with your actual API key.
@@ -117,7 +127,7 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
 ![Demo Image 1](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-1.png)
 ![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-2.png)
-![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png)
+![Demo Image 3](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png)
 
 ---
 
@@ -125,6 +135,7 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
 1. **For Articles**: Upload a PDF file or provide a URL of an article. The system extracts text, processes it into chunks, and allows you to ask questions through the chatbot interface.
 2. **For Data Analysis**: Navigate to the Data Analysis page to upload your data files, preview your dataset, and interact with an AI-driven assistant for visualizations and analysis.
+3. **For Search Queries**: Use the Search Agent Bot to explore research papers, recent news, or general topics, with AI-powered answers tailored to your query.
 
 ---
 
