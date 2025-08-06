@@ -1,6 +1,6 @@
 # Cortex AI: Multi-Model Insights Hub
 
-Cortex AI: Multi-Model Insights Hub is an advanced platform that leverages cutting-edge AI to empower your research, analysis, and data exploration. By integrating multiple Large Language Models (LLMs) with a sophisticated Retrieve-and-Generate (RAG) system, Cortex AI Hub enables you to extract insights from documents and data with ease and precision.
+Cortex AI: Multi-Model Insights Hub is an advanced platform that leverages cutting-edge AI to empower your research, and analysis. By integrating multiple Large Language Models (LLMs) with a sophisticated Retrieve-and-Generate (RAG) system, Cortex AI Hub enables you to extract insights from documents and data with ease and precision.
 
 Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for interactive document analysis, dynamic data exploration, and multi-model comparisons—all in one place.
 
@@ -15,7 +15,6 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 - **🧠 Multi-LLM Integration**: Leverage a suite of LLMs (including DeepSeek, Qwen, Gemma, Llama, Mistral, and Mixtral) to generate context-aware, accurate responses.
 - **💬 Persistent Conversation History**: Maintain conversation continuity with stored dialogue history.
 - **🔄 Flexible Model Selection**: Easily switch between different LLMs or compare outputs by selecting multiple models simultaneously.
-- **📊 Data Analysis Chatbot**: Interactively visualize and analyze your data with AI-driven assistance on a dedicated page.
 - **🔍 Search Agent Bot**: Discover insights from research articles, recent news, and general queries using an AI-powered search assistant.
 - **🚀 Scalable Streamlit Cloud Deployment**: Access the platform through a responsive, cloud-hosted interface for global reach.
 
@@ -49,13 +48,6 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 6. **Conversation History**: Maintain dialogue continuity with stored conversation history.
 7. **Model Switching & Comparison**: Easily switch between LLM models or run them concurrently to compare their outputs.
 
-### Data Analysis Chatbot
-
-1. **Data Upload**: Upload data files in various formats (CSV, Excel, JSON, Parquet) via the dedicated Data Analysis page.
-2. **Data Processing**: The app processes and previews your data for further analysis.
-3. **Interactive Analysis**: Use the AI-driven chat interface to ask questions, generate visualizations, and analyze your data.
-4. **Dynamic Visualizations**: Receive Python code for generating plots and visualizations, ensuring that your data insights are both accurate and engaging.
-
 ### Search Agent Bot
 
 1. **User Query**: Enter a question or topic (e.g., recent news, research papers, or definitions like "What is MCP?") via the dedicated Search Agent page.
@@ -86,8 +78,8 @@ Follow these steps to set up and run Cortex AI: Multi-Model Insights Hub locally
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/RobinMillford/Multi-Model-RAG-Powered-Article-Chatbot.git
-cd Multi-Model-RAG-Powered-Article-Chatbot
+git clone https://github.com/RobinMillford/Cortex-AI-Multi-Model-Insights-Hub.git
+cd Cortex-AI-Multi-Model-Insights-Hub
 ```
 
 ### Install Dependencies
@@ -134,8 +126,7 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 ## Usage
 
 1. **For Articles**: Upload a PDF file or provide a URL of an article. The system extracts text, processes it into chunks, and allows you to ask questions through the chatbot interface.
-2. **For Data Analysis**: Navigate to the Data Analysis page to upload your data files, preview your dataset, and interact with an AI-driven assistant for visualizations and analysis.
-3. **For Search Queries**: Use the Search Agent Bot to explore research papers, recent news, or general topics, with AI-powered answers tailored to your query.
+2. **For Search Queries**: Use the Search Agent Bot to explore research papers, recent news, or general topics, with AI-powered answers tailored to your query.
 
 ---
 
