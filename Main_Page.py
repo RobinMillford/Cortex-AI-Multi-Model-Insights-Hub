@@ -47,7 +47,6 @@ st.markdown(
         interactive research, and dynamic data analysis. Our platform offers:
         <ul style="list-style-type:square; display: inline-block; text-align: left;">
             <li><strong>Search Agent</strong> – Engage with AI-powered insights to explore research articles and news.</li>
-            <li><strong>Data Analysis Chatbot</strong> – Visualize and analyze your data with AI-driven assistance.</li>
             <li><strong>Search Agent Bot</strong> – Discover insights with an advanced AI-powered search assistant.</li>
         </ul>
         <br>
