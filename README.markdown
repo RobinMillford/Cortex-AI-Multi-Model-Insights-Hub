@@ -58,7 +58,7 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 
 ![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml%20Diagram.png)
 
-![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml_diagram_2.png)
+<!-- ![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml_diagram_2.png) -->
 
 ---
 
@@ -119,7 +119,7 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
 ![Demo Image 1](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-1.png)
 ![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-2.png)
-![Demo Image 3](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png)
+<!-- ![Demo Image 3](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png) -->
 
 ---
 
