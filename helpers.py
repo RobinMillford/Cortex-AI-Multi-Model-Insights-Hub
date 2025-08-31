@@ -1,4 +1,5 @@
 import fitz
+from time import sleep
 from newspaper import Article
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
@@ -20,7 +21,6 @@ def extract_text_from_pdf(file):
 
 # Function to extract text from a URL
 def extract_text_from_url(url, retries=3):
-    from time import sleep
 
     for attempt in range(retries):
         try:

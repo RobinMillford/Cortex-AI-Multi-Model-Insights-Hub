@@ -1,69 +1,105 @@
 import streamlit as st
 
-st.set_page_config(page_title="Cortex AI: Multi-Model Insights Hub", page_icon="🤖", layout="wide")
+st.set_page_config(
+    page_title="Cortex AI: Multi-Model Insights Hub",
+    page_icon="🤖",
+    layout="wide"
+)
 
-# Custom CSS for styling
-st.markdown(
-    """
-    <style>
+# Custom CSS for the dark theme
+st.markdown('''
+<style>
+    /* Using the theme from config.toml */
+    body {
+        font-family: 'monospace';
+        color: #40e723; /* textColor */
+        background-color: #000000; /* backgroundColor */
+    }
+    .stApp {
+        background-color: #000000;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #40e723; /* primaryColor for headers */
+    }
+    .main-container {
+        border: 2px solid #40e723;
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem;
+        background-color: #1a1a1a; /* A slightly lighter black for contrast */
+    }
     .main-title {
-        font-size: 48px;
+        font-size: 3rem;
         font-weight: bold;
         text-align: center;
-        color: #4B0082;
-        margin-top: 50px;
+        text-shadow: 0 0 10px #40e723;
     }
     .subtitle {
-        font-size: 24px;
+        font-size: 1.25rem;
         text-align: center;
-        color: #2F4F4F;
-        margin-bottom: 30px;
+        color: #FFFFFF; /* secondaryBackgroundColor for subtitle text */
+        margin-bottom: 2rem;
     }
-    .description {
-        font-size: 18px;
+    .feature-card {
+        background-color: #0d0d0d;
+        border: 1px solid #40e723;
+        border-radius: 10px;
+        padding: 2rem;
         text-align: center;
-        margin: 20px 0;
+        height: 100%;
+        transition: transform 0.3s, box-shadow 0.3s;
     }
-    .page-info {
-        font-size: 16px;
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 15px #40e723;
+    }
+    .feature-title {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .feature-description {
+        font-size: 1rem;
+        color: #FFFFFF;
+    }
+    .get-started {
         text-align: center;
-        margin-top: 40px;
-        color: #555;
+        margin-top: 2rem;
+        font-size: 1.2rem;
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+</style>
+''', unsafe_allow_html=True)
 
-# Main Title and Subtitle
-st.markdown('<div class="main-title">Cortex AI: Multi-Model Insights Hub</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Empowering your research, analysis, and data exploration with multiple AI models</div>', unsafe_allow_html=True)
-
-# Description Section
-st.markdown(
-    """
-    <div class="description">
-        Welcome to Cortex AI Hub, your one-stop platform for leveraging advanced AI models for multi-model retrieval, 
-        interactive research, and dynamic data analysis. Our platform offers:
-        <ul style="list-style-type:square; display: inline-block; text-align: left;">
-            <li><strong>Search Agent</strong> – Engage with AI-powered insights to explore research articles and news.</li>
-            <li><strong>Search Agent Bot</strong> – Discover insights with an advanced AI-powered search assistant.</li>
-        </ul>
-        <br>
-        Select a page from the sidebar to get started!
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Footer
-st.markdown(
-    """
-    <div class="page-info">
-        © 2025 Cortex AI Hub • Built with Streamlit & advanced AI models
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown('</div>', unsafe_allow_html=True)
+# Main Content
+with st.container():
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    
+    st.markdown('<h1 class="main-title">Cortex AI Hub</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">Multi-Model Document Analysis & Intelligent Search</p>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown('''
+        <div class="feature-card">
+            <h2 class="feature-title">📄 RAG Chatbot</h2>
+            <p class="feature-description">
+                Engage in a dialogue with your documents. Upload PDFs or provide URLs to get summaries, 
+                ask questions, and extract key information with our Retrieval-Augmented Generation chatbot.
+            </p>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+    with col2:
+        st.markdown('''
+        <div class="feature-card">
+            <h2 class "feature-title">🔍 Search Agent</h2>
+            <p class="feature-description">
+                Your intelligent agent for exploring the web. Ask about any topic, 
+                and our agent will use multiple tools to find the most relevant and up-to-date information for you.
+            </p>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+    st.markdown('<p class="get-started">Select a tool from the sidebar to begin your journey into AI-powered insights.</p>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
