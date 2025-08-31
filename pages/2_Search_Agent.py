@@ -70,15 +70,12 @@ tools = [
 
 # --- Model & Settings Data ---
 models = {
-    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
-    "qwen-2.5-32b": {"advantages": "Long-context.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
-    "gemma2-9b-it": {"advantages": "High throughput.", "disadvantages": "Limited versatility.", "provider": "Google"},
-    "llama-3.1-8b-instant": {"advantages": "High-speed.", "disadvantages": "Less accurate.", "provider": "Meta"},
-    "llama-3.3-70b-versatile": {"advantages": "High accuracy.", "disadvantages": "Lower throughput.", "provider": "Meta"},
-    "llama3-70b-8192": {"advantages": "Ideal for research.", "disadvantages": "Moderate speed.", "provider": "Meta"},
-    "llama3-8b-8192": {"advantages": "High-speed.", "disadvantages": "Less accurate.", "provider": "Meta"},
-    "mistral-saba-24b": {"advantages": "Multi-turn conversation.", "disadvantages": "Limited token capacity.", "provider": "Mistral AI"},
-    "mixtral-8x7b-32768": {"advantages": "Supports long documents.", "disadvantages": "Lower token throughput.", "provider": "Mistral AI"},
+    "llama-3.3-70b-versatile": {"advantages": "High accuracy in diverse scenarios.", "disadvantages": "Lower throughput.", "provider": "Meta"},
+    "llama-3.1-8b-instant": {"advantages": "High-speed for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
+    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency, no token limits.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
+    "qwen/qwen3-32b": {"advantages": "Powerful 32B model for long-context.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
+    "openai/gpt-oss-120b": {"advantages": "120B params, browser search, code execution.", "disadvantages": "Slower speed.", "provider": "OpenAI"},
+    "openai/gpt-oss-20b": {"advantages": "20B params, browser search, code execution.", "disadvantages": "Smaller model.", "provider": "OpenAI"},
 }
 
 # --- Sidebar UI ---
@@ -86,7 +83,7 @@ with st.sidebar:
     st.header("Search Configuration")
     
     st.subheader("AI Model")
-    selected_model = st.selectbox("Select a model", options=list(models.keys()), index=5)
+    selected_model = st.selectbox("Select a model", options=list(models.keys()), index=0)
     
     with st.expander("Model Details"):
         st.markdown(f"**{selected_model}** (*{models[selected_model]['provider']}*)")

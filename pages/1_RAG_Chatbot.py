@@ -1,5 +1,10 @@
 import streamlit as st
-from helpers import extract_text_from_pdf, extract_text_from_url, process_content, create_vector_store
+import chromadb
+import hashlib
+from langchain.embeddings.huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+from helpers import extract_text_from_pdf, extract_text_from_url, process_content, create_vector_store, keyword_search
+from langchain.schema import Document
 from chain_setup import get_chain, ask_question
 
 # --- Page Configuration ---
@@ -49,15 +54,12 @@ st.markdown('''
 
 # --- Model & Settings Data ---
 models = {
-    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency, no token limits.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
-    "qwen-2.5-32b": {"advantages": "Long-context comprehension.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
-    "gemma2-9b-it": {"advantages": "High throughput, fast inference.", "disadvantages": "Limited versatility.", "provider": "Google"},
-    "llama-3.1-8b-instant": {"advantages": "High-speed, for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
     "llama-3.3-70b-versatile": {"advantages": "High accuracy in diverse scenarios.", "disadvantages": "Lower throughput.", "provider": "Meta"},
-    "llama3-70b-8192": {"advantages": "Ideal for detailed research.", "disadvantages": "Moderate speed.", "provider": "Meta"},
-    "llama3-8b-8192": {"advantages": "High-speed with long-context.", "disadvantages": "Less accurate for complex reasoning.", "provider": "Meta"},
-    "mistral-saba-24b": {"advantages": "Strong multi-turn conversation.", "disadvantages": "Limited token capacity.", "provider": "Mistral AI"},
-    "mixtral-8x7b-32768": {"advantages": "Supports long documents.", "disadvantages": "Lower token throughput.", "provider": "Mistral AI"},
+    "llama-3.1-8b-instant": {"advantages": "High-speed for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
+    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency, no token limits.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
+    "qwen/qwen3-32b": {"advantages": "Powerful 32B model for long-context.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
+    "openai/gpt-oss-120b": {"advantages": "120B params, browser search, code execution.", "disadvantages": "Slower speed.", "provider": "OpenAI"},
+    "openai/gpt-oss-20b": {"advantages": "20B params, browser search, code execution.", "disadvantages": "Smaller model.", "provider": "OpenAI"},
 }
 
 # --- Sidebar UI ---
@@ -67,23 +69,24 @@ with st.sidebar:
     st.subheader("Content Source")
     input_method = st.radio("Input Method", ["PDF File", "URL"], label_visibility="collapsed")
     content = None
-    content_id = None
+    collection_name = None
     if input_method == "PDF File":
         uploaded_file = st.file_uploader("Upload PDF", type="pdf")
         if uploaded_file:
             content = extract_text_from_pdf(uploaded_file)
             content_id = f"{uploaded_file.name}-{uploaded_file.size}"
+            collection_name = hashlib.sha256(content_id.encode()).hexdigest()
     else:
         url = st.text_input("Article URL")
         if url:
             with st.spinner("Extracting text..."):
                 content = extract_text_from_url(url)
-                content_id = url
+                collection_name = hashlib.sha256(url.encode()).hexdigest()
 
     st.subheader("AI Models")
-    selected_models = st.multiselect("Select models", options=list(models.keys()), default=["llama3-70b-8192"])
+    selected_models = st.multiselect("Select models", options=list(models.keys()), default=["llama-3.3-70b-versatile"])
     if not selected_models:
-        selected_models = ["llama3-70b-8192"]
+        selected_models = ["llama-3.3-70b-versatile"]
 
     with st.expander("Model Details"):
         for model_name in selected_models:
@@ -106,8 +109,8 @@ st.title("📄 RAG Chatbot")
 st.markdown("Chat with your documents.")
 
 # --- Session State Initialization ---
-if "last_content_id" not in st.session_state:
-    st.session_state.last_content_id = None
+if "last_collection_name" not in st.session_state:
+    st.session_state.last_collection_name = None
 if "rag_messages" not in st.session_state:
     st.session_state.rag_messages = [{"role": "assistant", "content": "Upload a document to begin."}]
 if "rag_conversation_history" not in st.session_state:
@@ -118,8 +121,8 @@ if "rag_vector_store" not in st.session_state:
 # --- Chat Logic ---
 if content and "Error" not in content:
     # Reset chat if new content is loaded
-    if st.session_state.last_content_id != content_id:
-        st.session_state.last_content_id = content_id
+    if st.session_state.last_collection_name != collection_name:
+        st.session_state.last_collection_name = collection_name
         st.session_state.rag_messages = [{"role": "assistant", "content": "Content processed. You can now ask questions."}]
         st.session_state.rag_conversation_history = ""
         st.session_state.rag_vector_store = None
@@ -130,12 +133,26 @@ if content and "Error" not in content:
             st.markdown(f"**Word Count:** {len(content.split())}")
             st.text(content[:250] + "...")
     
-    chunks = process_content(content, chunk_size, chunk_overlap)
-    if chunks:
-        if st.session_state.rag_vector_store is None:
-            with st.spinner("Creating vector store..."):
-                st.session_state.rag_vector_store = create_vector_store(chunks)
-        
+    # --- Vector Store Logic ---
+    if st.session_state.rag_vector_store is None:
+        with st.spinner("Processing content and creating vector store..."):
+            client = chromadb.PersistentClient(path="./chroma_db")
+            collections = client.list_collections()
+            collection_names = [c.name for c in collections]
+            
+            if collection_name in collection_names:
+                st.success(f"Loading existing vector store: {collection_name}")
+                st.session_state.rag_vector_store = Chroma(
+                    collection_name=collection_name,
+                    embedding_function=HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2"),
+                    persist_directory="./chroma_db"
+                )
+            else:
+                st.info(f"Creating new vector store: {collection_name}")
+                chunks = process_content(content, chunk_size, chunk_overlap)
+                st.session_state.rag_vector_store = create_vector_store(chunks, collection_name)
+
+    if st.session_state.rag_vector_store:
         retriever = st.session_state.rag_vector_store.as_retriever()
 
         for message in st.session_state.rag_messages:
@@ -147,8 +164,30 @@ if content and "Error" not in content:
             with st.chat_message("user"):
                 st.write(prompt)
 
-            context_text = " ".join([doc.page_content for doc in retriever.get_relevant_documents(prompt)])
-            with st.expander("Retrieved Context"):
+            # Get all documents from the vector store for keyword search
+            # This might be inefficient for very large documents/collections
+            all_docs_in_store = st.session_state.rag_vector_store.get(
+                include=['documents']
+            )['documents']
+            # Convert list of strings to list of Document objects
+            all_docs_in_store_obj = [Document(page_content=d) for d in all_docs_in_store]
+
+
+            # Perform semantic search
+            semantic_docs = retriever.get_relevant_documents(prompt)
+
+            # Perform keyword search
+            keyword_docs = keyword_search(prompt, all_docs_in_store_obj)
+
+            # Combine results and remove duplicates
+            combined_docs = {}
+            for doc in semantic_docs + keyword_docs:
+                combined_docs[doc.page_content] = doc # Use page_content as key for uniqueness
+
+            final_docs = list(combined_docs.values())
+
+            context_text = " ".join([doc.page_content for doc in final_docs])
+            with st.expander("Retrieved Context (Hybrid Search)"):
                 st.info(context_text or "No relevant context found.")
 
             for model in selected_models:
@@ -163,7 +202,6 @@ if content and "Error" not in content:
                 st.session_state.rag_conversation_history += f"\nUser: {prompt}\nAssistant ({model}): {response}"
 else:
     st.info("Upload a document or provide a URL to get started.")
-    # Reset if content is cleared
-    if st.session_state.last_content_id is not None:
-        st.session_state.last_content_id = None
+    if st.session_state.last_collection_name is not None:
+        st.session_state.last_collection_name = None
         st.session_state.rag_messages = [{"role": "assistant", "content": "Upload a document to begin."}]

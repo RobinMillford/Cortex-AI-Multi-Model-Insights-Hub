@@ -131,3 +131,5 @@ wikipedia==1.4.0
 xlrd==2.0.1
 xxhash==3.5.0
 yarl==1.19.0
+chromadb
+rank-bm25
