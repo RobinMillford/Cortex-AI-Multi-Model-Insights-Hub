@@ -8,57 +8,55 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 
 ## 📌 **Features**
 
-- **📂 Document Upload**: Upload PDFs or enter URLs containing articles or documents.
-- **📖 Intelligent Text Extraction**: Automatically extract and process text from uploaded documents or web pages.
-- **📑 Dynamic Chunking & Embedding**: Split the extracted text into manageable chunks and generate embeddings for efficient search and retrieval.
-- **⚡ Robust Vector Database**: Store embeddings in a high-performance vector database for rapid, context-driven searches.
-- **🧠 Multi-LLM Integration**: Leverage a suite of LLMs (including DeepSeek, Qwen, Gemma, Llama, Mistral, and Mixtral) to generate context-aware, accurate responses.
-- **💬 Persistent Conversation History**: Maintain conversation continuity with stored dialogue history.
-- **🔄 Flexible Model Selection**: Easily switch between different LLMs or compare outputs by selecting multiple models simultaneously.
-- **🔍 Search Agent Bot**: Discover insights from research articles, recent news, and general queries using an AI-powered search assistant.
-- **🚀 Scalable Streamlit Cloud Deployment**: Access the platform through a responsive, cloud-hosted interface for global reach.
+- **✨ Modern & Intuitive UI:** A sleek, dark-themed user interface across the entire application for an enhanced user experience.
+- **📂 Multi-Document Management:** Upload and manage a PDF file or provide URLs to online articles.
+- **📖 Intelligent Text Extraction:** Automatically extract and process text from uploaded documents or web pages.
+- **📑 Dynamic Chunking & Embedding:** Split extracted text into manageable chunks and generate embeddings for efficient search and retrieval.
+- **⚡ Persistent Vector Database (ChromaDB):** Embeddings are stored in a high-performance, persistent ChromaDB vector database, eliminating the need to re-process documents.
+- **🔍 Hybrid Search (Semantic + BM25):** Combines semantic search with keyword (BM25) search for highly accurate and relevant context retrieval.
+- **🔄 Query Transformation:** Intelligently rephrases conversational follow-up questions into standalone queries for improved retrieval effectiveness.
+- **🧠 Multi-LLM Integration:** Leverage a suite of LLMs (including DeepSeek, Qwen, Llama, and OpenAI models) to generate context-aware, accurate responses.
+- **💬 Persistent Conversation History:** Maintain dialogue continuity with stored dialogue history.
+- **✅ Accurate Citations & Source Highlighting:** Answers include precise citations, linking directly to the numbered source chunks from the document for transparency.
+- **🔄 Flexible Model Selection:** Easily switch between different LLMs or compare outputs by selecting multiple models simultaneously.
+- **🔍 Search Agent Bot:** Discover insights from research articles, recent news, and general queries using an AI-powered search assistant.
+- **🚀 Scalable Streamlit Cloud Deployment:** Access the platform through a responsive, cloud-hosted interface for global reach.
 
 ---
 
 ## 🚀 **Supported Models**
 
-| Model                         | RPM | RPD    | Tokens/Min | Tokens/Day | Advantages                                                                      | Disadvantages                                     |
-| ----------------------------- | --- | ------ | ---------- | ---------- | ------------------------------------------------------------------------------- | ------------------------------------------------- |
-| deepseek-r1-distill-llama-70b | 30  | 1,000  | 6,000      | Unlimited  | Highly optimized for low latency with unlimited token capacity.                 | Limited daily requests.                           |
-| qwen-2.5-32b                  | 30  | 14,400 | 10,000     | 500,000    | Powerful 32B model optimized for long-context comprehension.                    | Requires more computational resources.            |
-| gemma2-9b-it                  | 30  | 14,400 | 15,000     | 500,000    | High token throughput, suitable for fast inference on large-scale tasks.        | Limited versatility compared to larger models.    |
-| llama-3.1-8b-instant          | 30  | 14,400 | 20,000     | 500,000    | High-speed processing with large token capacity, ideal for real-time apps.      | Less accurate for complex reasoning.              |
-| llama-3.3-70b-versatile       | 30  | 1,000  | 6,000      | 100,000    | Versatile model optimized for high accuracy in diverse scenarios.               | Lower throughput compared to smaller models.      |
-| llama3-70b-8192               | 30  | 14,400 | 6,000      | 500,000    | Long-context capabilities, perfect for detailed research articles.              | Moderate speed and accuracy for shorter tasks.    |
-| llama3-8b-8192                | 30  | 14,400 | 20,000     | 500,000    | High-speed inference with extensive long-context support.                       | Slightly less accurate for complex reasoning.     |
-| mistral-saba-24b              | 30  | 7,000  | 7,000      | 250,000    | Excellent for multi-turn conversations and effective retrieval augmentation.    | Limited token capacity compared to larger models. |
-| mixtral-8x7b-32768            | 30  | 14,400 | 5,000      | 500,000    | Optimized for processing long documents with superior contextual understanding. | Lower token throughput.                           |
+| Model                         | Provider      | Advantages                                        | Disadvantages                                     |
+| :---------------------------- | :------------ | :------------------------------------------------ | :------------------------------------------------ |
+| llama-3.3-70b-versatile       | Meta          | High accuracy in diverse scenarios.               | Lower throughput.                                 |
+| llama-3.1-8b-instant          | Meta          | High-speed for real-time apps.                    | Less accurate for complex tasks.                  |
+| deepseek-r1-distill-llama-70b | DeepSeek      | Low latency, no token limits.                     | Limited daily requests.                           |
+| qwen/qwen3-32b                | Alibaba Cloud | Powerful 32B model for long-context.              | Computationally intensive.                        |
+| openai/gpt-oss-120b           | OpenAI        | 120B params, browser search, code execution.      | Slower speed.                                     |
+| openai/gpt-oss-20b            | OpenAI        | 20B params, browser search, code execution.       | Smaller model.                                    |
 
 ---
 
 ## How It Works
 
-### Article Chatbot
+### Article Chatbot (RAG-Powered)
 
-1. **User Input**: Upload a PDF file or provide a URL to an article or document.
-2. **Text Extraction**: The system automatically extracts text from your document or webpage.
-3. **Chunking & Embeddings**: The extracted text is segmented into smaller chunks, and embeddings are generated using advanced LLM techniques.
-4. **Vector Store**: Embeddings are stored in a high-performance vector database (e.g., ChromaDB, FAISS, Pinecone, or DocArrayInMemorySearch from LangChain) for rapid retrieval.
-5. **Querying & Response Generation**: Ask questions through the chatbot interface, and the system retrieves relevant context and generates answers using one or more selected LLMs.
-6. **Conversation History**: Maintain dialogue continuity with stored conversation history.
-7. **Model Switching & Comparison**: Easily switch between LLM models or run them concurrently to compare their outputs.
+1.  **User Input**: Upload PDF files or provide URLs to articles/documents. The UI allows for multi-document selection.
+2.  **Text Extraction & Processing**: The system automatically extracts text from your documents/webpages, splits it into manageable chunks, and generates embeddings.
+3.  **Persistent Vector Store**: Embeddings are stored in a persistent ChromaDB vector database. Existing document stores are loaded, new ones are created and saved.
+4.  **Hybrid Retrieval**: When you ask a question, the system performs both semantic (vector) search and keyword (BM25) search across all selected documents to retrieve the most relevant context.
+5.  **Query Transformation**: Conversational follow-up questions are rephrased into standalone queries for optimal retrieval.
+6.  **Querying & Response Generation**: The system retrieves relevant context and generates answers using one or more selected LLMs. Answers include precise citations to the source documents.
+7.  **Conversation History**: Maintain dialogue continuity with stored conversation history.
+8.  **Model Switching & Comparison**: Easily switch between LLM models or run them concurrently to compare their outputs.
 
 ### Search Agent Bot
 
-1. **User Query**: Enter a question or topic (e.g., recent news, research papers, or definitions like "What is MCP?") via the dedicated Search Agent page.
-2. **Tool Integration**: The bot leverages external tools (e.g., Arxiv, Wikipedia, Tavily) to fetch relevant, up-to-date information.
-3. **Context-Aware Responses**: The system processes queries with multi-LLM integration, delivering concise, accurate answers based on recent data (e.g., past 30 days for news).
-4. **Conversation Continuity**: Maintains dialogue history for context-aware follow-up questions.
-5. **Model Selection**: Choose from multiple LLMs to tailor the response style and depth, with options to retry searches for better results.
-
-![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml%20Diagram.png)
-
-<!-- ![System Diagram](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Uml_diagram_2.png) -->
+1.  **User Query**: Enter a question or topic (e.g., recent news, research papers, or definitions like "What is MCP?") via the dedicated Search Agent page.
+2.  **Tool Integration**: The bot leverages external tools (e.g., Arxiv, Wikipedia, Tavily) to fetch relevant, up-to-date information.
+3.  **Context-Aware Responses**: The system processes queries with multi-LLM integration, delivering concise, accurate answers based on recent data (e.g., past 30 days for news).
+4.  **Conversation Continuity**: Maintains dialogue history for context-aware follow-up questions.
+5.  **Model Selection**: Choose from multiple LLMs to tailor the response style and depth, with options to retry searches for better results.
 
 ---
 
@@ -68,10 +66,10 @@ Follow these steps to set up and run Cortex AI: Multi-Model Insights Hub locally
 
 ### Prerequisites
 
-- **Python 3.12**
-- **pip** for package management
-- A **.env** file with your API keys (see below)
-- **ChatGroq API Key** for LLM integration
+-   **Python 3.12**
+-   **pip** for package management
+-   A **.env** file with your API keys (see below)
+-   **ChatGroq API Key** for LLM integration
 
 ### Clone the Repository
 
@@ -108,7 +106,7 @@ Replace `your_chatgroq_api_key` with your actual API key.
 Start the application locally with:
 
 ```bash
-streamlit run app.py
+streamlit run Main_Page.py
 ```
 
 ### Deployed on Streamlit Cloud
@@ -117,16 +115,12 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
 [Streamlit Deployed Demo](https://cortex-ai-multi-model-insights-app.streamlit.app/)
 
-![Demo Image 1](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-1.png)
-![Demo Image 2](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Llama3-RAG-Chatbot-2.png)
-<!-- ![Demo Image 3](https://github.com/RobinMillford/LLM-Based-Text-Summarizer/blob/main/images/Data-Analysis-Chatbot-with-Multi-Model-Responses-·-Streamlit.png) -->
-
 ---
 
 ## Usage
 
-1. **For Articles**: Upload a PDF file or provide a URL of an article. The system extracts text, processes it into chunks, and allows you to ask questions through the chatbot interface.
-2. **For Search Queries**: Use the Search Agent Bot to explore research papers, recent news, or general topics, with AI-powered answers tailored to your query.
+1.  **For Articles**: Upload PDF files or provide URLs. The system extracts text, processes it into chunks, and allows you to ask questions through the chatbot interface.
+2.  **For Search Queries**: Use the Search Agent Bot to explore research papers, recent news, or general topics, with AI-powered answers tailored to your query.
 
 ---
 
@@ -134,33 +128,33 @@ Cortex AI Hub is live on Streamlit Cloud. Explore the demo here:
 
 Contributions are welcome! To contribute:
 
-1. **Fork the Repository** on GitHub.
-2. Clone your fork:
+1.  **Fork the Repository** on GitHub.
+2.  Clone your fork:
 
-   ```bash
-   git clone https://github.com/RobinMillford/Multi-Model-RAG-Powered-Article-Chatbot.git
-   ```
+    ```bash
+    git clone https://github.com/RobinMillford/Multi-Model-RAG-Powered-Article-Chatbot.git
+    ```
 
-3. Create a new branch:
+3.  Create a new branch:
 
-   ```bash
-   git checkout -b feature-name
-   ```
+    ```bash
+    git checkout -b feature-name
+    ```
 
-4. Make your changes and commit them:
+4.  Make your changes and commit them:
 
-   ```bash
-   git add .
-   git commit -m "Description of the changes"
-   ```
+    ```bash
+    git add .
+    git commit -m "Description of the changes"
+    ```
 
-5. Push your branch:
+5.  Push your branch:
 
-   ```bash
-   git push origin feature-name
-   ```
+    ```bash
+    git push origin feature-name
+    ```
 
-6. Open a **Pull Request** to the `main` branch of the original repository.
+6.  Open a **Pull Request** to the `main` branch of the original repository.
 
 ---
 
