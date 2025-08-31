@@ -5,7 +5,7 @@ from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from helpers import extract_text_from_pdf, extract_text_from_url, process_content, create_vector_store, keyword_search
 from langchain.schema import Document
-from chain_setup import get_chain, ask_question
+from chain_setup import get_chain, ask_question, get_query_transform_chain
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -164,6 +164,13 @@ if content and "Error" not in content:
             with st.chat_message("user"):
                 st.write(prompt)
 
+            # --- Query Transformation ---
+            with st.spinner("Transforming query..."):
+                query_transform_chain = get_query_transform_chain(selected_models[0]) # Use the first selected model for transformation
+                transformed_query = query_transform_chain.invoke({"chat_history": st.session_state.rag_conversation_history, "question": prompt})
+            
+            st.markdown(f"*Transformed Query:* `{transformed_query}`")
+
             # Get all documents from the vector store for keyword search
             # This might be inefficient for very large documents/collections
             all_docs_in_store = st.session_state.rag_vector_store.get(
@@ -174,10 +181,10 @@ if content and "Error" not in content:
 
 
             # Perform semantic search
-            semantic_docs = retriever.get_relevant_documents(prompt)
+            semantic_docs = retriever.get_relevant_documents(transformed_query)
 
             # Perform keyword search
-            keyword_docs = keyword_search(prompt, all_docs_in_store_obj)
+            keyword_docs = keyword_search(transformed_query, all_docs_in_store_obj)
 
             # Combine results and remove duplicates
             combined_docs = {}
@@ -186,20 +193,36 @@ if content and "Error" not in content:
 
             final_docs = list(combined_docs.values())
 
-            context_text = " ".join([doc.page_content for doc in final_docs])
+            # Format context with numbered sources for LLM
+            formatted_context_parts = []
+            for i, doc in enumerate(final_docs):
+                formatted_context_parts.append(f"[Source {i+1}: {doc.page_content}]")
+            context_text = "\n\n".join(formatted_context_parts)
+
             with st.expander("Retrieved Context (Hybrid Search)"):
-                st.info(context_text or "No relevant context found.")
+                if final_docs:
+                    for i, doc in enumerate(final_docs):
+                        st.markdown(f"**Source {i+1}:**")
+                        st.text(doc.page_content[:200] + "...")
+                else:
+                    st.info("No relevant context found.")
 
             for model in selected_models:
                 with st.chat_message("assistant"):
-                    st.markdown(f"*Response from {model}:*", unsafe_allow_html=True)
+                    st.markdown(f"*Response from {model}:*")
                     with st.spinner(f"Asking {model}..."):
                         chain = get_chain(model, temperature)
-                        response = ask_question(chain, prompt, context_text, chat_history=st.session_state.rag_conversation_history)
+                        response, sources = ask_question(chain, prompt, context_text, chat_history=st.session_state.rag_conversation_history, final_docs=final_docs)
                         st.write(response)
                 
                 st.session_state.rag_messages.append({"role": "assistant", "content": response})
                 st.session_state.rag_conversation_history += f"\nUser: {prompt}\nAssistant ({model}): {response}"
+
+                if sources:
+                    with st.expander(f"Sources for {model}"):
+                        for i, doc in enumerate(sources):
+                            st.markdown(f"**Source {i+1}:**")
+                            st.text(doc.page_content[:200] + "...")
 else:
     st.info("Upload a document or provide a URL to get started.")
     if st.session_state.last_collection_name is not None:
