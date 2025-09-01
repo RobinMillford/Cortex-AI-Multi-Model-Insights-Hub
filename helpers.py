@@ -1,7 +1,6 @@
 import fitz
 from time import sleep
 from newspaper import Article
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain.schema import Document
 from langchain_community.vectorstores import Chroma

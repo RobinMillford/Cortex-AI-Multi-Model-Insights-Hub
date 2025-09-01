@@ -100,8 +100,6 @@ with st.sidebar:
 
     st.subheader("Parameters")
     temperature = st.slider("Temperature", 0.0, 2.0, 0.7, 0.1)
-    chunk_size = st.slider("Chunk Size", 100, 3000, 300, 50)
-    chunk_overlap = st.slider("Chunk Overlap", 10, 300, 50, 10)
 
     if st.button("Reset App"):
         for key in list(st.session_state.keys()):
