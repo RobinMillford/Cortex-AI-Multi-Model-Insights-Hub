@@ -153,7 +153,7 @@ if content and "Error" not in content:
                 )
             else:
                 st.info(f"Creating new vector store: {collection_name}")
-                chunks = process_content(content, chunk_size, chunk_overlap)
+                chunks = process_content(content)
                 st.session_state.rag_vector_store = create_vector_store(chunks, collection_name)
 
     if st.session_state.rag_vector_store:

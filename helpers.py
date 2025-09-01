@@ -2,6 +2,7 @@ import fitz
 from time import sleep
 from newspaper import Article
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_experimental.text_splitter import SemanticChunker
 from langchain.schema import Document
 from langchain_community.vectorstores import Chroma
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
@@ -40,10 +41,13 @@ def extract_text_from_url(url, retries=3):
             return f"Error processing URL after {retries} attempts: {e}"
 
 # Function to split content into chunks
-def process_content(content, chunk_size, chunk_overlap):
+def process_content(content):
     document = Document(page_content=content)
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = text_splitter.split_documents([document])
+
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    semantic_text_splitter = SemanticChunker(embeddings)
+    chunks = semantic_text_splitter.split_documents([document])
+
     return chunks
 
 # Function to create a persistent vector store with ChromaDB
