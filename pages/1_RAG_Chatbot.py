@@ -100,6 +100,8 @@ with st.sidebar:
 
     st.subheader("Parameters")
     temperature = st.slider("Temperature", 0.0, 2.0, 0.7, 0.1)
+    num_retrieved_chunks = st.slider("Number of Retrieved Chunks", 1, 10, 3, 1)
+    max_chars_per_chunk = st.slider("Max Characters per Chunk (for LLM)", 100, 2000, 500, 100)
 
     if st.button("Reset App"):
         for key in list(st.session_state.keys()):
@@ -166,13 +168,6 @@ if content and "Error" not in content:
             with st.chat_message("user"):
                 st.write(prompt)
 
-            # --- Query Transformation ---
-            with st.spinner("Transforming query..."):
-                query_transform_chain = get_query_transform_chain(selected_models[0]) # Use the first selected model for transformation
-                transformed_query = query_transform_chain.invoke({"chat_history": st.session_state.rag_conversation_history, "question": prompt})
-            
-            st.markdown(f"*Transformed Query:* `{transformed_query}`")
-
             # Get all documents from the vector store for keyword search
             # This might be inefficient for very large documents/collections
             all_docs_in_store = st.session_state.rag_vector_store.get(
@@ -183,10 +178,10 @@ if content and "Error" not in content:
 
 
             # Perform semantic search
-            semantic_docs = retriever.get_relevant_documents(transformed_query)
+            semantic_docs = retriever.get_relevant_documents(prompt)
 
             # Perform keyword search
-            keyword_docs = keyword_search(transformed_query, all_docs_in_store_obj)
+            keyword_docs = keyword_search(prompt, all_docs_in_store_obj, top_n=num_retrieved_chunks)
 
             # Combine results and remove duplicates
             combined_docs = {}
@@ -195,17 +190,20 @@ if content and "Error" not in content:
 
             final_docs = list(combined_docs.values())
 
-            # Format context with numbered sources for LLM
+            # Format context with numbered sources for LLM, ensuring truncation for the LLM input
             formatted_context_parts = []
             for i, doc in enumerate(final_docs):
-                formatted_context_parts.append(f"[Source {i+1}: {doc.page_content}]")
+                truncated_content = doc.page_content[:max_chars_per_chunk]
+                if len(doc.page_content) > max_chars_per_chunk:
+                    truncated_content += "..."
+                formatted_context_parts.append(f"[Source {i+1}: {truncated_content}]")
             context_text = "\n\n".join(formatted_context_parts)
 
             with st.expander("Retrieved Context (Hybrid Search)"):
                 if final_docs:
                     for i, doc in enumerate(final_docs):
                         st.markdown(f"**Source {i+1}:**")
-                        st.text(doc.page_content[:200] + "...")
+                        st.text(doc.page_content[:500] + "...") # Display truncation for UI
                 else:
                     st.info("No relevant context found.")
 
@@ -218,7 +216,12 @@ if content and "Error" not in content:
                         st.write(response)
                 
                 st.session_state.rag_messages.append({"role": "assistant", "content": response})
+                
+                # Update and truncate conversation history
+                MAX_HISTORY_CHARS = 1500  # Approximately 1500 characters for chat history
                 st.session_state.rag_conversation_history += f"\nUser: {prompt}\nAssistant ({model}): {response}"
+                if len(st.session_state.rag_conversation_history) > MAX_HISTORY_CHARS:
+                    st.session_state.rag_conversation_history = st.session_state.rag_conversation_history[-(MAX_HISTORY_CHARS // 2):] # Keep the most recent half
 
                 if sources:
                     with st.expander(f"Sources for {model}"):

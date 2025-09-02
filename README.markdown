@@ -9,14 +9,14 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 ## 📌 **Features**
 
 - **✨ Modern & Intuitive UI:** A sleek, dark-themed user interface across the entire application for an enhanced user experience.
-- **📂 Multi-Document Management:** Upload and manage a PDF file or provide URLs to online articles.
+- **📂 Multi-Document Management:** Upload and manage a PDF file or provide URL to online articles.
 - **📖 Intelligent Text Extraction:** Automatically extract and process text from uploaded documents or web pages.
 - **📑 Dynamic Chunking & Embedding:** Split extracted text into manageable chunks and generate embeddings for efficient search and retrieval.
 - **⚡ Persistent Vector Database (ChromaDB):** Embeddings are stored in a high-performance, persistent ChromaDB vector database, eliminating the need to re-process documents.
 - **🔍 Hybrid Search (Semantic + BM25):** Combines semantic search with keyword (BM25) search for highly accurate and relevant context retrieval.
-- **🔄 Query Transformation:** Intelligently rephrases conversational follow-up questions into standalone queries for improved retrieval effectiveness.
+- **⚙️ Configurable RAG Parameters:** Adjust the number of retrieved chunks and the maximum characters per chunk to fine-tune context retrieval for different query types.
+- **💬 Persistent Conversation History:** Maintain dialogue continuity with stored dialogue history, with automatic truncation to manage token limits.
 - **🧠 Multi-LLM Integration:** Leverage a suite of LLMs (including DeepSeek, Qwen, Llama, and OpenAI models) to generate context-aware, accurate responses.
-- **💬 Persistent Conversation History:** Maintain dialogue continuity with stored dialogue history.
 - **✅ Accurate Citations & Source Highlighting:** Answers include precise citations, linking directly to the numbered source chunks from the document for transparency.
 - **🔄 Flexible Model Selection:** Easily switch between different LLMs or compare outputs by selecting multiple models simultaneously.
 - **🔍 Search Agent Bot:** Discover insights from research articles, recent news, and general queries using an AI-powered search assistant.
@@ -26,14 +26,14 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 
 ## 🚀 **Supported Models**
 
-| Model                         | Provider      | Advantages                                        | Disadvantages                                     |
-| :---------------------------- | :------------ | :------------------------------------------------ | :------------------------------------------------ |
-| llama-3.3-70b-versatile       | Meta          | High accuracy in diverse scenarios.               | Lower throughput.                                 |
-| llama-3.1-8b-instant          | Meta          | High-speed for real-time apps.                    | Less accurate for complex tasks.                  |
-| deepseek-r1-distill-llama-70b | DeepSeek      | Low latency, no token limits.                     | Limited daily requests.                           |
-| qwen/qwen3-32b                | Alibaba Cloud | Powerful 32B model for long-context.              | Computationally intensive.                        |
-| openai/gpt-oss-120b           | OpenAI        | 120B params, browser search, code execution.      | Slower speed.                                     |
-| openai/gpt-oss-20b            | OpenAI        | 20B params, browser search, code execution.       | Smaller model.                                    |
+| Model                         | Provider      | Advantages                                   | Disadvantages                    |
+| :---------------------------- | :------------ | :------------------------------------------- | :------------------------------- |
+| llama-3.3-70b-versatile       | Meta          | High accuracy in diverse scenarios.          | Lower throughput.                |
+| llama-3.1-8b-instant          | Meta          | High-speed for real-time apps.               | Less accurate for complex tasks. |
+| deepseek-r1-distill-llama-70b | DeepSeek      | Low latency, no token limits.                | Limited daily requests.          |
+| qwen/qwen3-32b                | Alibaba Cloud | Powerful 32B model for long-context.         | Computationally intensive.       |
+| openai/gpt-oss-120b           | OpenAI        | 120B params, browser search, code execution. | Slower speed.                    |
+| openai/gpt-oss-20b            | OpenAI        | 20B params, browser search, code execution.  | Smaller model.                   |
 
 ---
 
@@ -44,11 +44,12 @@ Deployed on **Streamlit Cloud**, this platform offers an intuitive interface for
 1.  **User Input**: Upload PDF files or provide URLs to articles/documents. The UI allows for multi-document selection.
 2.  **Text Extraction & Processing**: The system automatically extracts text from your documents/webpages, splits it into manageable chunks, and generates embeddings.
 3.  **Persistent Vector Store**: Embeddings are stored in a persistent ChromaDB vector database. Existing document stores are loaded, new ones are created and saved.
-4.  **Hybrid Retrieval**: When you ask a question, the system performs both semantic (vector) search and keyword (BM25) search across all selected documents to retrieve the most relevant context.
-5.  **Query Transformation**: Conversational follow-up questions are rephrased into standalone queries for optimal retrieval.
-6.  **Querying & Response Generation**: The system retrieves relevant context and generates answers using one or more selected LLMs. Answers include precise citations to the source documents.
-7.  **Conversation History**: Maintain dialogue continuity with stored conversation history.
-8.  **Model Switching & Comparison**: Easily switch between LLM models or run them concurrently to compare their outputs.
+4.  **Hybrid Retrieval**: When you ask a question, the system performs both semantic (vector) search and keyword (BM25) search across all selected documents to retrieve the most relevant context, configurable via sidebar parameters.
+5.  **Querying & Response Generation**: The system retrieves relevant context and generates answers using one or more selected LLMs. Answers include precise citations to the source documents.
+6.  **Conversation History**: Maintain dialogue continuity with stored conversation history, automatically truncated to fit model token limits.
+5.  **Querying & Response Generation**: The system retrieves relevant context and generates answers using one or more selected LLMs. Answers include precise citations to the source documents.
+6.  **Conversation History**: Maintain dialogue continuity with stored conversation history.
+7.  **Model Switching & Comparison**: Easily switch between LLM models or run them concurrently to compare their outputs.
 
 ### Search Agent Bot
 
@@ -66,10 +67,10 @@ Follow these steps to set up and run Cortex AI: Multi-Model Insights Hub locally
 
 ### Prerequisites
 
--   **Python 3.12**
--   **pip** for package management
--   A **.env** file with your API keys (see below)
--   **ChatGroq API Key** for LLM integration
+- **Python 3.12**
+- **pip** for package management
+- A **.env** file with your API keys (see below)
+- **ChatGroq API Key** for LLM integration
 
 ### Clone the Repository
 
