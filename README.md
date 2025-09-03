@@ -74,18 +74,20 @@ _AI-powered search agent with real-time research capabilities_
 
 ## 🔄 **System Architecture**
 
-### 📊 **Workflow Diagram**
+### 📊 **RAG Chatbot Workflow**
+
+![RAG Chatbot Workflow](images/Ragchotbot_diagram.png)
+_Complete RAG chatbot workflow with document processing, hybrid search, and multi-LLM response generation_
+
+### 🤖 **Search Agent Workflow**
+
+![Search Agent Workflow](images/Search_Agent_Diagram.png)
+_AI-powered search agent workflow with multi-tool research and intelligent orchestration_
+
+### 🖼️ **Multimodal RAG Workflow**
 
 ![Multimodal RAG Workflow](images/Multimodel_Rag.png)
-_Complete multimodal RAG workflow with swimlane organization_
-
-### 🏗️ **System Diagrams**
-
-![System UML Diagram](images/Uml%20Diagram.png)
-_High-level system architecture_
-
-![Detailed UML Diagram](images/Uml_diagram_2.png)
-_Component interactions and data flow_
+_Enhanced multimodal workflow combining text and visual content analysis_
 
 ---
 
