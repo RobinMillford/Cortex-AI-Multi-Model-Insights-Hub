@@ -227,7 +227,8 @@ if content and "Error" not in content:
             # Create traditional text vector store
             client = chromadb.PersistentClient(path="./chroma_db")
             collections = client.list_collections()
-            collection_names = [c.name for c in collections]
+            # ChromaDB v0.6.0+ returns collection names directly
+            collection_names = [c.name if hasattr(c, 'name') else c for c in collections]
             
             text_collection_name = collection_name.replace("_multimodal", "")
             
