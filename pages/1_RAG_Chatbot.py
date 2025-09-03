@@ -145,7 +145,12 @@ if content and "Error" not in content:
             client = chromadb.PersistentClient(path="./chroma_db")
             collections = client.list_collections()
             # ChromaDB v0.6.0+ returns collection names directly
-            collection_names = [c.name if hasattr(c, 'name') else c for c in collections]
+            try:
+                # Try new API (v0.6.0+) - returns strings directly
+                collection_names = collections
+            except:
+                # Fallback to old API (< v0.6.0) - returns collection objects
+                collection_names = [c.name for c in collections]
             
             if collection_name in collection_names:
                 st.success(f"Loading existing vector store: {collection_name}")
