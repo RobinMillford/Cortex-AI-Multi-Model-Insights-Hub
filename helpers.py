@@ -9,6 +9,7 @@ from rank_bm25 import BM25Okapi
 from typing import List, Dict, Tuple, Optional
 import os
 import io
+import fitz  # PyMuPDF
 
 # Import multimodal helpers at module level to avoid conditional imports
 try:

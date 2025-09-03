@@ -360,9 +360,16 @@ def load_multimodal_store(filepath: str) -> Dict:
 def get_collection_hash(content: str, has_images: bool = False) -> str:
     """Generate hash for collection identification"""
     content_hash = hashlib.sha256(content.encode()).hexdigest()
+    
+    # ChromaDB requires collection names to be 3-63 characters
+    # Truncate hash to leave room for suffix
     if has_images:
-        content_hash += "_multimodal"
-    return content_hash
+        # Reserve 11 chars for "_multimodal" suffix, use 52 chars for hash
+        truncated_hash = content_hash[:52]
+        return f"{truncated_hash}_multimodal"
+    else:
+        # Use 60 chars for hash to stay well under 63 limit
+        return content_hash[:60]
 
 # Backward compatibility alias
 FreeMultimodalEmbedder = MultimodalEmbedder

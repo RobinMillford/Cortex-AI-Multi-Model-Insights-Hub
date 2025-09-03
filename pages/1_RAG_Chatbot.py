@@ -79,13 +79,15 @@ with st.sidebar:
         if uploaded_file:
             content = extract_text_from_pdf(uploaded_file)
             content_id = f"{uploaded_file.name}-{uploaded_file.size}"
-            collection_name = hashlib.sha256(content_id.encode()).hexdigest()
+            # Truncate hash to meet ChromaDB's 63-character limit
+            collection_name = hashlib.sha256(content_id.encode()).hexdigest()[:60]
     else:
         url = st.text_input("Article URL")
         if url:
             with st.spinner("Extracting text..."):
                 content = extract_text_from_url(url)
-                collection_name = hashlib.sha256(url.encode()).hexdigest()
+                # Truncate hash to meet ChromaDB's 63-character limit
+                collection_name = hashlib.sha256(url.encode()).hexdigest()[:60]
 
     st.subheader("AI Models")
     selected_models = st.multiselect("Select models", options=list(models.keys()), default=["llama-3.3-70b-versatile"])
