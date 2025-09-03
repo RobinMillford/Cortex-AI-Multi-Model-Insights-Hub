@@ -76,7 +76,7 @@ with st.container():
     st.markdown('<h1 class="main-title">Cortex AI Hub</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Multi-Model Document Analysis & Intelligent Search</p>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown('''
@@ -92,10 +92,21 @@ with st.container():
     with col2:
         st.markdown('''
         <div class="feature-card">
-            <h2 class "feature-title">🔍 Search Agent</h2>
+            <h2 class="feature-title">🔍 Search Agent</h2>
             <p class="feature-description">
                 Your intelligent agent for exploring the web. Ask about any topic, 
                 and our agent will use multiple tools to find the most relevant and up-to-date information for you.
+            </p>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+    with col3:
+        st.markdown('''
+        <div class="feature-card">
+            <h2 class="feature-title">🖼️ Multimodal RAG</h2>
+            <p class="feature-description">
+                Advanced document analysis that understands both text AND images. 
+                Analyze charts, graphs, infographics, and visual content alongside text for comprehensive insights.
             </p>
         </div>
         ''', unsafe_allow_html=True)

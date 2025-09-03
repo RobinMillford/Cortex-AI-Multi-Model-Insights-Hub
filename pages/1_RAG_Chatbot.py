@@ -5,8 +5,8 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import chromadb
 import hashlib
-from langchain.embeddings.huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 from helpers import extract_text_from_pdf, extract_text_from_url, process_content, create_vector_store, keyword_search
 from langchain.schema import Document
 from chain_setup import get_chain, ask_question, get_query_transform_chain

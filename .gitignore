@@ -177,4 +177,13 @@ pyrightconfig.json
 
 chroma_db/
 
+# Multimodal RAG stores - user-specific processed data
+multimodal_stores/
+*.pkl
+
+# Hugging Face model cache (optional - models are large)
+# Uncomment if you want to exclude cached models
+# .cache/
+# ~/.cache/huggingface/
+
 # End of https://www.toptal.com/developers/gitignore/api/python

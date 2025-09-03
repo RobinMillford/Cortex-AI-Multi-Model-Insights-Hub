@@ -135,3 +135,7 @@ xxhash==3.5.0
 yarl==1.19.0
 chromadb
 rank-bm25
+faiss-cpu
+tavily-python
+langchain-chroma
+langchain-huggingface
