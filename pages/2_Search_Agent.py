@@ -18,37 +18,95 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS for Dark Theme ---
+# --- Custom CSS for Premium Dark Theme ---
 st.markdown('''
 <style>
-    body {
-        font-family: 'monospace';
-        color: #40e723;
-    }
+    /* General App Styling */
     .stApp {
-        background-color: #000000;
+        background-color: #050505;
+        color: #e0e0e0;
     }
+    
+    /* Typography */
     h1, h2, h3 {
-        color: #40e723;
+        color: #00ff9d !important; /* Neon Green */
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
     }
-    .st-emotion-cache-16txtl3 {
-        background-color: #0d0d0d;
-        border: 1px solid #40e723;
-        border-radius: 10px;
+    
+    p, div, label {
+        font-family: 'Segoe UI', sans-serif;
+        color: #e0e0e0;
     }
-    .st-emotion-cache-163ttbj {
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #0a0a0a;
+        border-right: 1px solid #333;
+    }
+
+    /* Input Fields */
+    .stTextInput > div > div > input {
         background-color: #1a1a1a;
+        color: #ffffff;
+        border: 1px solid #333;
+        border-radius: 8px;
     }
-    .st-emotion-cache-6q9sum.ef3psqc4 {
-        background-color: #40e723;
+    .stTextInput > div > div > input:focus {
+        border-color: #00ff9d;
+        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(45deg, #00ff9d, #00cc7a);
         color: #000000;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
     }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+    }
+
+    /* Chat Messages */
     .stChatMessage {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    [data-testid="stChatMessageContent"] {
+        color: #e0e0e0;
+    }
+    
+    /* User Message Accent */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
+        border-left: 4px solid #00ff9d;
+    }
+    
+    /* Assistant Message Accent */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
+        border-left: 4px solid #00b8ff;
+    }
+
+    /* Expanders */
+    .streamlit-expanderHeader {
         background-color: #1a1a1a;
-        border: 1px solid #40e723;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
+        border-radius: 8px;
+        color: #00ff9d;
+    }
+    
+    /* Success/Info Messages */
+    .stSuccess, .stInfo {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        border-left: 4px solid #00ff9d;
     }
 </style>
 ''', unsafe_allow_html=True)
@@ -72,15 +130,14 @@ tools = [
 models = {
     "llama-3.3-70b-versatile": {"advantages": "High accuracy in diverse scenarios.", "disadvantages": "Lower throughput.", "provider": "Meta"},
     "llama-3.1-8b-instant": {"advantages": "High-speed for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
-    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency, no token limits.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
-    "qwen/qwen3-32b": {"advantages": "Powerful 32B model for long-context.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
+    "meta-llama/llama-guard-4-12b": {"advantages": "Optimized for safety and guardrailing.", "disadvantages": "Specialized for safety, not general chat.", "provider": "Meta"},
     "openai/gpt-oss-120b": {"advantages": "120B params, browser search, code execution.", "disadvantages": "Slower speed.", "provider": "OpenAI"},
     "openai/gpt-oss-20b": {"advantages": "20B params, browser search, code execution.", "disadvantages": "Smaller model.", "provider": "OpenAI"},
 }
 
 # --- Sidebar UI ---
 with st.sidebar:
-    st.header("Search Configuration")
+    st.title("🔍 Search Configuration")
     
     st.subheader("AI Model")
     selected_model = st.selectbox("Select a model", options=list(models.keys()), index=0)
@@ -90,12 +147,30 @@ with st.sidebar:
         st.markdown(f"- **Pros**: {models[selected_model]['advantages']}")
         st.markdown(f"- **Cons**: {models[selected_model]['disadvantages']}")
 
-    st.subheader("Temperature")
+    st.subheader("Parameters")
     temperature = st.slider("Temperature", 0.0, 2.0, 0.1, 0.05)
 
-    if st.button("Clear Chat"):
+    if st.button("🗑️ Clear Chat"):
         st.session_state.search_state = {"messages": [AIMessage(content="Hi! I'm your search agent. How can I help?")]}
         st.rerun()
+    
+    # --- Information Section ---
+    st.markdown("---")
+    st.markdown("### 🔍 About Search Agent")
+    st.markdown("""
+    This intelligent agent can search across multiple sources:
+
+    **📚 Available Tools:**
+    - 🌐 **Web Search** (Tavily): Real-time web search
+    - 📖 **Wikipedia**: Encyclopedia knowledge
+    - 📄 **ArXiv**: Academic papers and research
+
+    **💡 How it works:**
+    1. Analyzes your question
+    2. Selects appropriate tools
+    3. Searches multiple sources
+    4. Synthesizes comprehensive answers
+    """)
 
 # --- LangGraph State & Graph Definition ---
 class State(TypedDict):
@@ -125,7 +200,7 @@ if "search_state" not in st.session_state:
 
 # --- Main Page UI & Chat Logic ---
 st.title("🔍 Intelligent Search Agent")
-st.markdown("Your gateway to real-time information and research.")
+st.caption("Your gateway to real-time information and research")
 
 for message in st.session_state.search_state["messages"]:
     with st.chat_message(message.type):
@@ -136,7 +211,7 @@ if prompt := st.chat_input("Ask anything..."):
     with st.chat_message("human"):
         st.markdown(prompt)
 
-    with st.spinner("Searching the web..."):
+    with st.spinner("🔍 Searching the web..."):
         try:
             output = search_graph.invoke(st.session_state.search_state)
             st.session_state.search_state = output

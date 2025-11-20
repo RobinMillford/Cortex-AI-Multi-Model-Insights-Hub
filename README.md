@@ -4,7 +4,7 @@
 
 Cortex AI Hub integrates multiple Large Language Models (LLMs) with a sophisticated **Multimodal Retrieve-and-Generate (RAG)** system, enabling you to extract insights from both **text and visual content** in documents.
 
-**✨ NEW: Multimodal Capabilities** - Now with support for images, charts, graphs, and infographics!
+**✨ NEW: Premium Dark Theme UI** - Modern, sleek interface with neon green accents and smooth animations!
 
 ---
 
@@ -15,8 +15,8 @@ Cortex AI Hub integrates multiple Large Language Models (LLMs) with a sophistica
 - **📊 Visual Content Understanding**: Analyze images, charts, graphs, and infographics
 - **🔗 Unified Text-Image Search**: Search across both textual and visual content
 - **🎯 Context-Aware Analysis**: Enhanced understanding with specialized prompts
-- **💾 Persistent Storage**: Efficient FAISS-based multimodal embeddings
-- **🆓 Free & Local**: Uses open-source models (BLIP, BLIP-2, GIT, CLIP)
+- **💾 Persistent Storage**: Efficient multimodal embeddings with pickle storage
+- **🆓 Free & Local**: Uses open-source models (BLIP, BLIP-2, GIT)
 
 ### 🔍 **Advanced Search & RAG**
 
@@ -27,21 +27,28 @@ Cortex AI Hub integrates multiple Large Language Models (LLMs) with a sophistica
 
 ### 🤖 **AI-Powered Search Agent**
 
-- **🌐 Real-Time Research**: ArXiv, Wikipedia, and web search tools
+- **🌐 Real-Time Research**: ArXiv, Wikipedia, and Tavily web search tools
 - **📰 Current Information**: Up-to-date news and research insights
 - **⚡ Instant Responses**: Fast, context-aware answers
+
+### 🎨 **Premium UI/UX**
+
+- **🌙 Dark Theme**: Sleek dark interface with neon green accents
+- **✨ Smooth Animations**: Hover effects, transitions, and micro-animations
+- **📱 Responsive Design**: Works beautifully on all screen sizes
+- **🎯 Modern Typography**: Clean, professional Segoe UI font
 
 ---
 
 ## 🚀 **Supported AI Models**
 
-| Model                         | Provider | Best For                      |
-| ----------------------------- | -------- | ----------------------------- |
-| llama-3.3-70b-versatile       | Meta     | Complex reasoning, analysis   |
-| llama-3.1-8b-instant          | Meta     | Quick queries, fast responses |
-| deepseek-r1-distill-llama-70b | DeepSeek | Extended conversations        |
-| qwen/qwen3-32b                | Alibaba  | Document summarization        |
-| openai/gpt-oss-120b           | OpenAI   | Complex analysis tasks        |
+| Model                        | Provider | Best For                      |
+| ---------------------------- | -------- | ----------------------------- |
+| llama-3.3-70b-versatile      | Meta     | Complex reasoning, analysis   |
+| llama-3.1-8b-instant         | Meta     | Quick queries, fast responses |
+| meta-llama/llama-guard-4-12b | Meta     | Safety and content moderation |
+| openai/gpt-oss-120b          | OpenAI   | Complex analysis tasks        |
+| openai/gpt-oss-20b           | OpenAI   | Balanced performance          |
 
 ### 🖼️ **Vision Models**
 
@@ -95,9 +102,9 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ### 📋 **Prerequisites**
 
-- Python 3.12+
+- Python 3.11+
 - Git
-- API Keys: ChatGroq and Tavily
+- API Keys: Groq and Tavily
 
 ### 📥 **Installation**
 
@@ -163,28 +170,28 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ## 🛠️ **Technology Stack**
 
-- **Frontend**: Streamlit with dark theme
+- **Frontend**: Streamlit with premium dark theme
 - **Backend**: Python, LangChain/LangGraph
-- **Vector DB**: ChromaDB (text), FAISS (multimodal)
-- **Embeddings**: HuggingFace sentence-transformers, CLIP
-- **Vision**: BLIP, BLIP-2, GIT (Hugging Face)
-- **LLMs**: Groq API
+- **Vector DB**: ChromaDB (text embeddings)
+- **Embeddings**: HuggingFace sentence-transformers
+- **Vision**: BLIP, BLIP-2, GIT (Hugging Face Transformers)
+- **LLMs**: Groq API (Meta Llama, OpenAI models)
 - **Search**: Tavily, ArXiv, Wikipedia APIs
 
 ### 📁 **Project Structure**
 
 ```
-├── Main_Page.py                 # App entry point
-├── multimodal_helpers.py        # Multimodal processing
-├── helpers.py                   # Text utilities
+├── Main_Page.py                 # App entry point with hero section
+├── multimodal_helpers.py        # Multimodal processing utilities
+├── helpers.py                   # Text processing utilities
 ├── chain_setup.py               # LLM configuration
 ├── pages/
-│   ├── 1_RAG_Chatbot.py        # Traditional RAG
+│   ├── 1_RAG_Chatbot.py        # Traditional RAG interface
 │   ├── 2_Search_Agent.py       # Web search agent
 │   └── 3_Multimodal_RAG.py     # Multimodal interface
 ├── chroma_db/                   # Text vector storage
-├── multimodal_stores/           # Multimodal storage
-└── requirements.txt             # Dependencies
+├── multimodal_stores/           # Multimodal embeddings storage
+└── requirements.txt             # Python dependencies
 ```
 
 ---
@@ -193,10 +200,11 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ### 🧠 **Architecture Highlights**
 
-- **Two-Layer Vision**: Vision models → descriptions, CLIP → embeddings
+- **Two-Layer Vision**: Vision models → descriptions, embeddings → search
 - **Hybrid Search**: Semantic + BM25 for optimal retrieval
 - **Model Caching**: Global cache prevents reloading
 - **Session Management**: Streamlit state for persistence
+- **No SQLite Dependencies**: Removed pysqlite3-binary for better compatibility
 
 ### ⚡ **Performance Optimizations**
 
@@ -204,6 +212,28 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 - Processed embeddings saved for reuse
 - Lazy loading when needed
 - Real-time progress feedback
+- Efficient pickle-based storage
+
+### 🎨 **UI/UX Enhancements**
+
+- Premium dark theme with neon green accents
+- Smooth hover animations and transitions
+- Gradient backgrounds and glowing effects
+- Modern card-based layouts
+- Responsive design for all devices
+
+---
+
+## 📝 **Recent Updates**
+
+### ✨ Version 2.0 (Latest)
+
+- **🎨 Premium Dark Theme**: Complete UI overhaul with modern design
+- **🤖 Updated Model List**: Added llama-guard-4-12b, removed deprecated models
+- **🔧 Dependency Cleanup**: Removed pysqlite3-binary for better compatibility
+- **✨ Enhanced Animations**: Smooth transitions and hover effects
+- **📊 Stats Section**: Added visual statistics on main page
+- **🎯 Improved Navigation**: Better sidebar organization
 
 ---
 
@@ -241,10 +271,13 @@ This project is licensed under the **AGPL-3.0 License**.
 ## 🙏 **Acknowledgments**
 
 - **🤗 Hugging Face**: Free open-source vision models
-- **🦙 Meta**: Llama models and CLIP
+- **🦙 Meta**: Llama models and vision transformers
 - **🔍 Salesforce**: BLIP vision models
 - **🏢 Microsoft**: GIT vision model
 - **⚡ Groq**: Fast LLM inference
 - **🌐 Streamlit**: Amazing app framework
+- **🔎 Tavily**: Advanced web search API
 
 ---
+
+**Made with ❤️ by the Cortex AI Team**

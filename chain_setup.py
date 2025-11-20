@@ -29,8 +29,9 @@ def get_chain(model_name, temperature=0.7):
 
     # ChatPromptTemplate
     template = """
-    Answer the question based on the context and chat history below.
-    If you can't answer the question, reply "I need more context".
+    Answer the question based ONLY on the context and chat history below.
+    If you can't answer the question from the context, reply "I cannot answer this question based on the provided documents."
+    Do not use outside knowledge.
     Cite the source documents by referencing their numbered content, e.g., [Source 1: ...].
 
     Chat History: {chat_history}

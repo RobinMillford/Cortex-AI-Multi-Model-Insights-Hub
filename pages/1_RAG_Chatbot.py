@@ -1,7 +1,3 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import streamlit as st
 import chromadb
 import hashlib
@@ -9,7 +5,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from helpers import extract_text_from_pdf, extract_text_from_url, process_content, create_vector_store, keyword_search
 from langchain.schema import Document
-from chain_setup import get_chain, ask_question, get_query_transform_chain
+from chain_setup import get_chain, ask_question
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -18,226 +14,264 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS for Dark Theme ---
+# --- Custom CSS for Premium Dark Theme ---
 st.markdown('''
 <style>
-    body {
-        font-family: 'monospace';
-        color: #40e723;
-    }
+    /* General App Styling */
     .stApp {
-        background-color: #000000;
+        background-color: #050505;
+        color: #e0e0e0;
     }
+    
+    /* Typography */
     h1, h2, h3 {
-        color: #40e723;
+        color: #00ff9d !important; /* Neon Green */
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
     }
-    .st-emotion-cache-16txtl3 {
-        background-color: #0d0d0d;
-        border: 1px solid #40e723;
-        border-radius: 10px;
+    
+    p, div, label {
+        font-family: 'Segoe UI', sans-serif;
+        color: #e0e0e0;
     }
-    .st-emotion-cache-163ttbj {
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #0a0a0a;
+        border-right: 1px solid #333;
+    }
+
+    /* Input Fields */
+    .stTextInput > div > div > input {
         background-color: #1a1a1a;
+        color: #ffffff;
+        border: 1px solid #333;
+        border-radius: 8px;
     }
-    .st-emotion-cache-6q9sum.ef3psqc4 {
-        background-color: #40e723;
+    .stTextInput > div > div > input:focus {
+        border-color: #00ff9d;
+        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(45deg, #00ff9d, #00cc7a);
         color: #000000;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
     }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+    }
+
+    /* Chat Messages */
     .stChatMessage {
-        background-color: #1a1a1a;
-        border: 1px solid #40e723;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    .st-expander {
-        border-color: #40e723 !important;
+    [data-testid="stChatMessageContent"] {
+        color: #e0e0e0;
+    }
+    
+    /* User Message Accent */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
+        border-left: 4px solid #00ff9d;
+    }
+    
+    /* Assistant Message Accent */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
+        border-left: 4px solid #00b8ff;
+    }
+
+    /* Expanders */
+    .streamlit-expanderHeader {
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        color: #00ff9d;
+    }
+    
+    /* Success/Info Messages */
+    .stSuccess, .stInfo {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        border-left: 4px solid #00ff9d;
     }
 </style>
 ''', unsafe_allow_html=True)
 
-# --- Model & Settings Data ---
-models = {
-    "llama-3.3-70b-versatile": {"advantages": "High accuracy in diverse scenarios.", "disadvantages": "Lower throughput.", "provider": "Meta"},
-    "llama-3.1-8b-instant": {"advantages": "High-speed for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
-    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency, no token limits.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
-    "qwen/qwen3-32b": {"advantages": "Powerful 32B model for long-context.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
-    "openai/gpt-oss-120b": {"advantages": "120B params, browser search, code execution.", "disadvantages": "Slower speed.", "provider": "OpenAI"},
-    "openai/gpt-oss-20b": {"advantages": "20B params, browser search, code execution.", "disadvantages": "Smaller model.", "provider": "OpenAI"},
-}
-
-# --- Sidebar UI ---
-with st.sidebar:
-    st.header("RAG Configuration")
-
-    st.subheader("Content Source")
-    input_method = st.radio("Input Method", ["PDF File", "URL"], label_visibility="collapsed")
-    content = None
-    collection_name = None
-    if input_method == "PDF File":
-        uploaded_file = st.file_uploader("Upload PDF", type="pdf")
-        if uploaded_file:
-            content = extract_text_from_pdf(uploaded_file)
-            content_id = f"{uploaded_file.name}-{uploaded_file.size}"
-            # Truncate hash to meet ChromaDB's 63-character limit
-            collection_name = hashlib.sha256(content_id.encode()).hexdigest()[:60]
-    else:
-        url = st.text_input("Article URL")
-        if url:
-            with st.spinner("Extracting text..."):
-                content = extract_text_from_url(url)
-                # Truncate hash to meet ChromaDB's 63-character limit
-                collection_name = hashlib.sha256(url.encode()).hexdigest()[:60]
-
-    st.subheader("AI Models")
-    selected_models = st.multiselect("Select models", options=list(models.keys()), default=["llama-3.3-70b-versatile"])
-    if not selected_models:
-        selected_models = ["llama-3.3-70b-versatile"]
-
-    with st.expander("Model Details"):
-        for model_name in selected_models:
-            st.markdown(f"**{model_name}** (*{models[model_name]['provider']}*)")
-            st.markdown(f"- **Pros**: {models[model_name]['advantages']}")
-            st.markdown(f"- **Cons**: {models[model_name]['disadvantages']}")
-
-    st.subheader("Parameters")
-    temperature = st.slider("Temperature", 0.0, 2.0, 0.7, 0.1)
-    num_retrieved_chunks = st.slider("Number of Retrieved Chunks", 1, 10, 3, 1)
-    max_chars_per_chunk = st.slider("Max Characters per Chunk (for LLM)", 100, 2000, 500, 100)
-
-    if st.button("Reset App"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.rerun()
-
-# --- Main Page UI ---
-st.title("📄 RAG Chatbot")
-st.markdown("Chat with your documents.")
-
 # --- Session State Initialization ---
-if "last_collection_name" not in st.session_state:
-    st.session_state.last_collection_name = None
 if "rag_messages" not in st.session_state:
-    st.session_state.rag_messages = [{"role": "assistant", "content": "Upload a document to begin."}]
+    st.session_state.rag_messages = [{"role": "assistant", "content": "👋 Hello! Upload a document or provide a URL to get started."}]
 if "rag_conversation_history" not in st.session_state:
     st.session_state.rag_conversation_history = ""
 if "rag_vector_store" not in st.session_state:
     st.session_state.rag_vector_store = None
+if "last_collection_name" not in st.session_state:
+    st.session_state.last_collection_name = None
 
-# --- Chat Logic ---
-if content and "Error" not in content:
-    # Reset chat if new content is loaded
-    if st.session_state.last_collection_name != collection_name:
-        st.session_state.last_collection_name = collection_name
-        st.session_state.rag_messages = [{"role": "assistant", "content": "Content processed. You can now ask questions."}]
-        st.session_state.rag_conversation_history = ""
-        st.session_state.rag_vector_store = None
-
-    with st.sidebar:
-        with st.expander("Content Preview", expanded=True):
-            st.success("Content Extracted!")
-            st.markdown(f"**Word Count:** {len(content.split())}")
-            st.text(content[:250] + "...")
+# --- Sidebar: Configuration & Uploads ---
+with st.sidebar:
+    st.title("🛠️ Configuration")
     
-    # --- Vector Store Logic ---
-    if st.session_state.rag_vector_store is None:
-        with st.spinner("Processing content and creating vector store..."):
-            client = chromadb.PersistentClient(path="./chroma_db")
-            collections = client.list_collections()
-            # ChromaDB v0.6.0+ returns collection names directly
+    st.subheader("1. Data Sources")
+    uploaded_files = st.file_uploader(
+        "Upload Documents (PDF, TXT)", 
+        type=["pdf", "txt"], 
+        accept_multiple_files=True
+    )
+    
+    url_input = st.text_input("Or enter a URL", placeholder="https://example.com/article")
+    
+    st.subheader("2. Model Settings")
+    selected_models = st.multiselect(
+        "Select LLM Models",
+        ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "meta-llama/llama-guard-4-12b", "openai/gpt-oss-120b", "openai/gpt-oss-20b"],
+        default=["llama-3.3-70b-versatile"]
+    )
+    
+    temperature = st.slider("Temperature (Creativity)", 0.0, 1.0, 0.7)
+    
+    process_btn = st.button("🚀 Process Content")
+
+# --- Main Content Area ---
+st.title("🧠 RAG Chatbot")
+st.caption("Powered by Groq, LangChain & ChromaDB")
+
+# --- Content Processing Logic ---
+if process_btn:
+    content_list = []
+    
+    # 1. Process Uploaded Files
+    if uploaded_files:
+        with st.status("Processing uploaded files...", expanded=True) as status:
+            for file in uploaded_files:
+                try:
+                    if file.type == "application/pdf":
+                        text = extract_text_from_pdf(file)
+                        if text:
+                            content_list.append((text, file.name))
+                            st.write(f"✅ Loaded: {file.name}")
+                    elif file.type == "text/plain":
+                        text = file.getvalue().decode("utf-8")
+                        content_list.append((text, file.name))
+                        st.write(f"✅ Loaded: {file.name}")
+                except Exception as e:
+                    st.error(f"Error processing {file.name}: {e}")
+            status.update(label="Files processed!", state="complete", expanded=False)
+
+    # 2. Process URL
+    if url_input:
+        with st.spinner(f"Scraping {url_input}..."):
             try:
-                # Try new API (v0.6.0+) - returns strings directly
-                collection_names = collections
-            except:
-                # Fallback to old API (< v0.6.0) - returns collection objects
-                collection_names = [c.name for c in collections]
+                text = extract_text_from_url(url_input)
+                if text:
+                    content_list.append((text, url_input))
+                    st.success(f"✅ Loaded URL: {url_input}")
+            except Exception as e:
+                st.error(f"Failed to load URL: {e}")
+
+    if not content_list:
+        st.warning("⚠️ Please upload a file or enter a valid URL.")
+    else:
+        # Create unique collection name based on content hash
+        content_str = "".join([t[0] for t in content_list])
+        collection_name = f"collection_{hashlib.md5(content_str.encode()).hexdigest()}"
+        
+        # Reset chat if content changed
+        if st.session_state.last_collection_name != collection_name:
+            st.session_state.last_collection_name = collection_name
+            st.session_state.rag_messages = [{"role": "assistant", "content": "✅ Content processed! I'm ready to answer your questions."}]
+            st.session_state.rag_conversation_history = ""
+            st.session_state.rag_vector_store = None
             
-            if collection_name in collection_names:
-                st.success(f"Loading existing vector store: {collection_name}")
-                st.session_state.rag_vector_store = Chroma(
-                    collection_name=collection_name,
-                    embedding_function=HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2"),
-                    persist_directory="./chroma_db"
-                )
-            else:
-                st.info(f"Creating new vector store: {collection_name}")
-                chunks = process_content(content)
-                st.session_state.rag_vector_store = create_vector_store(chunks, collection_name)
+            # Create/Load Vector Store
+            with st.spinner("Creating vector embeddings..."):
+                try:
+                    chunks = process_content(content_list)
+                    st.session_state.rag_vector_store = create_vector_store(chunks, collection_name)
+                    st.success(f"🎉 Knowledge base ready! ({len(chunks)} chunks created)")
+                except Exception as e:
+                    st.error(f"Vector store creation failed: {e}")
 
-    if st.session_state.rag_vector_store:
+# --- Chat Interface ---
+# Display Chat History
+for message in st.session_state.rag_messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Chat Input & Logic
+if prompt := st.chat_input("Ask a question about your documents..."):
+    if not st.session_state.rag_vector_store:
+        st.error("⚠️ Please upload and process documents first!")
+    else:
+        # Add User Message
+        st.session_state.rag_messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Retrieval & Generation
         retriever = st.session_state.rag_vector_store.as_retriever()
-
-        for message in st.session_state.rag_messages:
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
-
-        if prompt := st.chat_input("Ask your document a question..."):
-            st.session_state.rag_messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.write(prompt)
-
-            # Get all documents from the vector store for keyword search
-            # This might be inefficient for very large documents/collections
-            all_docs_in_store = st.session_state.rag_vector_store.get(
-                include=['documents']
-            )['documents']
-            # Convert list of strings to list of Document objects
-            all_docs_in_store_obj = [Document(page_content=d) for d in all_docs_in_store]
-
-
-            # Perform semantic search
-            semantic_docs = retriever.get_relevant_documents(prompt)
-
-            # Perform keyword search
-            keyword_docs = keyword_search(prompt, all_docs_in_store_obj, top_n=num_retrieved_chunks)
-
-            # Combine results and remove duplicates
-            combined_docs = {}
-            for doc in semantic_docs + keyword_docs:
-                combined_docs[doc.page_content] = doc # Use page_content as key for uniqueness
-
-            final_docs = list(combined_docs.values())
-
-            # Format context with numbered sources for LLM, ensuring truncation for the LLM input
-            formatted_context_parts = []
+        
+        # 1. Retrieve Documents (Hybrid Search)
+        # Note: For simplicity in this view, we use the standard retriever + keyword search from helpers
+        # Ideally, we should fetch all docs for keyword search, but that can be heavy. 
+        # We'll use the helper's logic if possible, or just standard retrieval for now to ensure speed.
+        
+        # Fetching all docs for keyword search (optimization: cache this if possible)
+        all_docs_data = st.session_state.rag_vector_store.get(include=['documents', 'metadatas'])
+        all_docs_obj = [Document(page_content=d, metadata=m) for d, m in zip(all_docs_data['documents'], all_docs_data['metadatas'])]
+        
+        semantic_docs = retriever.get_relevant_documents(prompt)
+        keyword_docs = keyword_search(prompt, all_docs_obj, top_n=3)
+        
+        # Combine & Deduplicate
+        combined_docs = {doc.page_content: doc for doc in semantic_docs + keyword_docs}
+        final_docs = list(combined_docs.values())[:5] # Limit to top 5
+        
+        # Format Context
+        context_text = "\n\n".join([f"[Source {i+1} ({d.metadata.get('source', 'Unknown')}): {d.page_content[:400]}...]" for i, d in enumerate(final_docs)])
+        
+        # Display Retrieved Context (Optional, for transparency)
+        with st.expander("🔍 Retrieved Context"):
             for i, doc in enumerate(final_docs):
-                truncated_content = doc.page_content[:max_chars_per_chunk]
-                if len(doc.page_content) > max_chars_per_chunk:
-                    truncated_content += "..."
-                formatted_context_parts.append(f"[Source {i+1}: {truncated_content}]")
-            context_text = "\n\n".join(formatted_context_parts)
+                st.markdown(f"**Source {i+1} ({doc.metadata.get('source', 'Unknown')}):**")
+                st.caption(doc.page_content[:300] + "...")
 
-            with st.expander("Retrieved Context (Hybrid Search)"):
-                if final_docs:
-                    for i, doc in enumerate(final_docs):
-                        st.markdown(f"**Source {i+1}:**")
-                        st.text(doc.page_content[:500] + "...") # Display truncation for UI
-                else:
-                    st.info("No relevant context found.")
-
+        # 2. Generate Responses
+        if not selected_models:
+            st.error("Please select at least one model in the sidebar.")
+        else:
             for model in selected_models:
                 with st.chat_message("assistant"):
-                    st.markdown(f"*Response from {model}:*")
-                    with st.spinner(f"Asking {model}..."):
-                        chain = get_chain(model, temperature)
-                        response, sources = ask_question(chain, prompt, context_text, chat_history=st.session_state.rag_conversation_history, final_docs=final_docs)
-                        st.write(response)
-                
-                st.session_state.rag_messages.append({"role": "assistant", "content": response})
-                
-                # Update and truncate conversation history
-                MAX_HISTORY_CHARS = 1500  # Approximately 1500 characters for chat history
-                st.session_state.rag_conversation_history += f"\nUser: {prompt}\nAssistant ({model}): {response}"
-                if len(st.session_state.rag_conversation_history) > MAX_HISTORY_CHARS:
-                    st.session_state.rag_conversation_history = st.session_state.rag_conversation_history[-(MAX_HISTORY_CHARS // 2):] # Keep the most recent half
-
-                if sources:
-                    with st.expander(f"Sources for {model}"):
-                        for i, doc in enumerate(sources):
-                            st.markdown(f"**Source {i+1}:**")
-                            st.text(doc.page_content[:200] + "...")
-else:
-    st.info("Upload a document or provide a URL to get started.")
-    if st.session_state.last_collection_name is not None:
-        st.session_state.last_collection_name = None
-        st.session_state.rag_messages = [{"role": "assistant", "content": "Upload a document to begin."}]
+                    st.markdown(f"**🤖 {model}**")
+                    placeholder = st.empty()
+                    
+                    with st.spinner(f"{model} is thinking..."):
+                        try:
+                            chain = get_chain(model, temperature)
+                            response, sources = ask_question(
+                                chain, 
+                                prompt, 
+                                context_text, 
+                                chat_history=st.session_state.rag_conversation_history, 
+                                final_docs=final_docs
+                            )
+                            placeholder.markdown(response)
+                            
+                            # Append to history
+                            st.session_state.rag_messages.append({"role": "assistant", "content": f"**{model}:** {response}"})
+                            st.session_state.rag_conversation_history += f"\nUser: {prompt}\nAssistant ({model}): {response}"
+                            
+                            # Show Sources specifically for this answer if needed
+                            # (Already shown in context expander, but can be specific here)
+                            
+                        except Exception as e:
+                            placeholder.error(f"Error generating response: {e}")

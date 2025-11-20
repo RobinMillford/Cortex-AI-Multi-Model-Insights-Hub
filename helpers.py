@@ -75,12 +75,18 @@ def extract_text_from_url(url, retries=3):
             return f"Error processing URL after {retries} attempts: {e}"
 
 # Function to split content into chunks
-def process_content(content):
-    document = Document(page_content=content)
+def process_content(content_list):
+    """
+    Processes a list of (content, source) tuples into chunks with metadata.
+    """
+    documents = []
+    for content, source in content_list:
+        if content.strip(): # Only add non-empty content
+            documents.append(Document(page_content=content, metadata={"source": source}))
 
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     semantic_text_splitter = SemanticChunker(embeddings)
-    chunks = semantic_text_splitter.split_documents([document])
+    chunks = semantic_text_splitter.split_documents(documents)
 
     return chunks
 

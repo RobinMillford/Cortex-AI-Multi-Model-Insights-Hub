@@ -1,7 +1,3 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import streamlit as st
 import chromadb
 import hashlib
@@ -24,56 +20,131 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS for Dark Theme ---
+# --- Custom CSS for Premium Dark Theme ---
 st.markdown('''
 <style>
-    body {
-        font-family: 'monospace';
-        color: #40e723;
-    }
+    /* General App Styling */
     .stApp {
-        background-color: #000000;
+        background-color: #050505;
+        color: #e0e0e0;
     }
+    
+    /* Typography */
     h1, h2, h3 {
-        color: #40e723;
+        color: #00ff9d !important; /* Neon Green */
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
     }
-    .st-emotion-cache-16txtl3 {
-        background-color: #0d0d0d;
-        border: 1px solid #40e723;
-        border-radius: 10px;
+    
+    p, div, label {
+        font-family: 'Segoe UI', sans-serif;
+        color: #e0e0e0;
     }
-    .st-emotion-cache-163ttbj {
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #0a0a0a;
+        border-right: 1px solid #333;
+    }
+
+    /* Input Fields */
+    .stTextInput > div > div > input {
         background-color: #1a1a1a;
+        color: #ffffff;
+        border: 1px solid #333;
+        border-radius: 8px;
     }
-    .st-emotion-cache-6q9sum.ef3psqc4 {
-        background-color: #40e723;
+    .stTextInput > div > div > input:focus {
+        border-color: #00ff9d;
+        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(45deg, #00ff9d, #00cc7a);
         color: #000000;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
     }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+    }
+
+    /* Chat Messages */
     .stChatMessage {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    [data-testid="stChatMessageContent"] {
+        color: #e0e0e0;
+    }
+    
+    /* User Message Accent */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
+        border-left: 4px solid #00ff9d;
+    }
+    
+    /* Assistant Message Accent */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
+        border-left: 4px solid #00b8ff;
+    }
+
+    /* Expanders */
+    .streamlit-expanderHeader {
         background-color: #1a1a1a;
-        border: 1px solid #40e723;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
+        border-radius: 8px;
+        color: #00ff9d;
     }
-    .st-expander {
-        border-color: #40e723 !important;
+    
+    /* Success/Info Messages */
+    .stSuccess, .stInfo {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        border-left: 4px solid #00ff9d;
     }
+    
+    /* Image Container */
     .image-container {
-        border: 2px solid #40e723;
+        border: 2px solid #00ff9d;
         border-radius: 10px;
         padding: 10px;
         margin: 10px 0;
+        background-color: #111;
     }
 </style>
 ''', unsafe_allow_html=True)
+
+# --- Session State Initialization ---
+if "multimodal_last_collection_name" not in st.session_state:
+    st.session_state.multimodal_last_collection_name = None
+if "multimodal_messages" not in st.session_state:
+    st.session_state.multimodal_messages = [{"role": "assistant", "content": "Upload a document to begin multimodal analysis."}]
+if "multimodal_conversation_history" not in st.session_state:
+    st.session_state.multimodal_conversation_history = ""
+if "multimodal_vector_store" not in st.session_state:
+    st.session_state.multimodal_vector_store = None
+if "multimodal_store" not in st.session_state:
+    st.session_state.multimodal_store = None
+if "processed_images" not in st.session_state:
+    st.session_state.processed_images = []
+if "multimodal_embedder" not in st.session_state:
+    st.session_state.multimodal_embedder = None
+if "current_vision_model" not in st.session_state:
+    st.session_state.current_vision_model = None
 
 # --- Model & Settings Data ---
 models = {
     "llama-3.3-70b-versatile": {"advantages": "High accuracy in diverse scenarios.", "disadvantages": "Lower throughput.", "provider": "Meta"},
     "llama-3.1-8b-instant": {"advantages": "High-speed for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
-    "deepseek-r1-distill-llama-70b": {"advantages": "Low latency, no token limits.", "disadvantages": "Limited daily requests.", "provider": "DeepSeek"},
-    "qwen/qwen3-32b": {"advantages": "Powerful 32B model for long-context.", "disadvantages": "Computationally intensive.", "provider": "Alibaba Cloud"},
+    "meta-llama/llama-guard-4-12b": {"advantages": "Optimized for safety and guardrailing.", "disadvantages": "Specialized for safety, not general chat.", "provider": "Meta"},
     "openai/gpt-oss-120b": {"advantages": "120B params, browser search, code execution.", "disadvantages": "Slower speed.", "provider": "OpenAI"},
     "openai/gpt-oss-20b": {"advantages": "20B params, browser search, code execution.", "disadvantages": "Smaller model.", "provider": "OpenAI"},
 }
@@ -101,26 +172,54 @@ with st.sidebar:
     extract_images = st.checkbox("Extract and analyze images", value=True)
     max_images = st.slider("Max images to process", 1, 10, 5, 1)
     
-    content = None
+    content = ""
+    content_for_processing = [] # List of (text, source) tuples
     images = []
     collection_name = None
     
     if input_method == "PDF File":
-        uploaded_file = st.file_uploader("Upload PDF", type="pdf")
-        if uploaded_file:
-            if extract_images:
-                content, images = extract_text_from_pdf(uploaded_file, extract_images=True)
-                images = images[:max_images]  # Limit number of images
-            else:
-                content = extract_text_from_pdf(uploaded_file)
-            content_id = f"{uploaded_file.name}-{uploaded_file.size}"
-            collection_name = get_collection_hash(content_id, has_images=extract_images and len(images) > 0)
+        uploaded_files = st.file_uploader("Upload PDF(s)", type="pdf", accept_multiple_files=True)
+        if uploaded_files:
+            content_text_list = []
+            all_images = []
+            
+            with st.spinner("Processing files..."):
+                for uploaded_file in uploaded_files:
+                    if extract_images:
+                        file_content, file_images = extract_text_from_pdf(uploaded_file, extract_images=True)
+                        if "Error" not in file_content:
+                            content_text_list.append(file_content)
+                            content_for_processing.append((file_content, uploaded_file.name))
+                            all_images.extend(file_images)
+                        else:
+                            st.error(f"Error processing {uploaded_file.name}: {file_content}")
+                    else:
+                        file_content = extract_text_from_pdf(uploaded_file)
+                        if "Error" not in file_content:
+                            content_text_list.append(file_content)
+                            content_for_processing.append((file_content, uploaded_file.name))
+                        else:
+                            st.error(f"Error processing {uploaded_file.name}: {file_content}")
+            
+            if content_text_list:
+                content = "\n\n".join(content_text_list)
+                images = all_images[:max_images]  # Limit total images
+                
+                # Create hash from all file names and sizes
+                files_id = "".join([f"{f.name}-{f.size}" for f in uploaded_files])
+                collection_name = get_collection_hash(files_id, has_images=extract_images and len(images) > 0)
+            
     else:
         url = st.text_input("Article URL")
         if url:
             with st.spinner("Extracting text..."):
                 content = extract_text_from_url(url)
-                collection_name = get_collection_hash(url, has_images=False)
+                if "Error" not in content:
+                    content_for_processing = [(content, url)]
+                    collection_name = get_collection_hash(url, has_images=False)
+                else:
+                    st.error(f"Error loading URL: {content}")
+                    content = ""
 
     st.subheader("AI Models")
     selected_models = st.multiselect("Select models", options=list(models.keys()), default=["llama-3.3-70b-versatile"])
@@ -164,7 +263,7 @@ with st.sidebar:
     3. Creates unified embeddings for text and images
     4. Searches across both modalities simultaneously
     5. Provides context-aware responses with visual citations
-
+    
     **💡 Free & Local Processing:**
     - Uses open-source vision models (BLIP, BLIP-2, GIT)
     - No paid API dependencies
@@ -174,24 +273,6 @@ with st.sidebar:
 # --- Main Page UI ---
 st.title("🖼️ Multimodal RAG Chatbot")
 st.markdown("Chat with your documents **including images, charts, and infographics**!")
-
-# --- Session State Initialization ---
-if "multimodal_last_collection_name" not in st.session_state:
-    st.session_state.multimodal_last_collection_name = None
-if "multimodal_messages" not in st.session_state:
-    st.session_state.multimodal_messages = [{"role": "assistant", "content": "Upload a document to begin multimodal analysis."}]
-if "multimodal_conversation_history" not in st.session_state:
-    st.session_state.multimodal_conversation_history = ""
-if "multimodal_vector_store" not in st.session_state:
-    st.session_state.multimodal_vector_store = None
-if "multimodal_store" not in st.session_state:
-    st.session_state.multimodal_store = None
-if "processed_images" not in st.session_state:
-    st.session_state.processed_images = []
-if "multimodal_embedder" not in st.session_state:
-    st.session_state.multimodal_embedder = None
-if "current_vision_model" not in st.session_state:
-    st.session_state.current_vision_model = None
 
 # --- Chat Logic ---
 if content and "Error" not in content:
@@ -246,7 +327,7 @@ if content and "Error" not in content:
                 )
             else:
                 st.info(f"Creating new text vector store: {text_collection_name}")
-                chunks = process_content(content)
+                chunks = process_content(content_for_processing)
                 st.session_state.multimodal_vector_store = create_vector_store(chunks, text_collection_name)
             
             # Create multimodal store if images are present
@@ -275,7 +356,7 @@ if content and "Error" not in content:
                         progress_bar.progress(0.2)
                         
                         # Get text chunks
-                        chunks = process_content(content)
+                        chunks = process_content(content_for_processing)
                         text_contents = [chunk.page_content for chunk in chunks]
                         progress_bar.progress(0.4)
                         
@@ -296,111 +377,81 @@ if content and "Error" not in content:
                         
                     except Exception as e:
                         st.error(f"Error creating multimodal store: {e}")
-                        progress_bar.empty()
-                        status_text.empty()
+                        st.session_state.multimodal_store = None
+            else:
+                st.session_state.multimodal_store = None
 
     # --- Chat Interface ---
-    if st.session_state.multimodal_vector_store:
-        # Display chat messages
-        for message in st.session_state.multimodal_messages:
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
+    for message in st.session_state.multimodal_messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-        if prompt := st.chat_input("Ask about your document (text and images)..."):
-            st.session_state.multimodal_messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.write(prompt)
+    if prompt := st.chat_input("Ask a question about your documents..."):
+        st.session_state.multimodal_messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-            # Get all documents from the vector store for keyword search
-            all_docs_in_store = st.session_state.multimodal_vector_store.get(
-                include=['documents']
-            )['documents']
-            all_docs_in_store_obj = [Document(page_content=d) for d in all_docs_in_store]
-
-            # Perform hybrid multimodal search
-            final_docs = hybrid_multimodal_search(
-                query=prompt,
-                vector_store=st.session_state.multimodal_vector_store,
-                chunks=all_docs_in_store_obj,
-                multimodal_store=st.session_state.multimodal_store,
-                top_n=num_retrieved_chunks,
-                include_images=include_images_in_search
-            )
-
-            # Format context for LLM
-            formatted_context_parts = []
-            for i, doc in enumerate(final_docs):
-                truncated_content = doc.page_content[:max_chars_per_chunk]
-                if len(doc.page_content) > max_chars_per_chunk:
-                    truncated_content += "..."
-                
-                # Add metadata for image sources
-                if hasattr(doc, 'metadata') and doc.metadata.get('type') == 'image':
-                    truncated_content = f"[IMAGE CONTENT: {truncated_content}]"
-                
-                formatted_context_parts.append(f"[Source {i+1}: {truncated_content}]")
+        # Retrieval & Generation
+        with st.chat_message("assistant"):
+            placeholder = st.empty()
             
-            context_text = "\n\n".join(formatted_context_parts)
+            # 1. Retrieve Context
+            context_text = ""
+            retrieved_images = []
+            
+            # Text Retrieval
+            if st.session_state.multimodal_vector_store:
+                retriever = st.session_state.multimodal_vector_store.as_retriever(search_kwargs={"k": num_retrieved_chunks})
+                docs = retriever.get_relevant_documents(prompt)
+                context_text = "\n\n".join([d.page_content for d in docs])
+            
+            # Image Retrieval (if enabled)
+            if st.session_state.multimodal_store and include_images_in_search:
+                try:
+                    embedder = st.session_state.multimodal_embedder
+                    results = hybrid_multimodal_search(
+                        st.session_state.multimodal_store,
+                        embedder,
+                        prompt,
+                        top_k=3
+                    )
+                    formatted_results = format_multimodal_results(results)
+                    
+                    # Add image descriptions to context
+                    for res in formatted_results:
+                        if res['type'] == 'image':
+                            context_text += f"\n[Image Context: {res['content']}]"
+                            retrieved_images.append(res['image_obj'])
+                except Exception as e:
+                    st.warning(f"Multimodal search failed: {e}")
 
-            # Show retrieved context
-            with st.expander("Retrieved Context (Multimodal Hybrid Search)"):
-                if final_docs:
-                    for i, doc in enumerate(final_docs):
-                        if hasattr(doc, 'metadata') and doc.metadata.get('type') == 'image':
-                            st.markdown(f"**🖼️ Image Source {i+1}:**")
-                            image_data = doc.metadata.get('image_data')
-                            if image_data:
-                                col1, col2 = st.columns([1, 2])
-                                with col1:
-                                    st.image(image_data['image'], width=150)
-                                with col2:
-                                    st.text(doc.page_content[:300] + "...")
-                        else:
-                            st.markdown(f"**📄 Text Source {i+1}:**")
-                            st.text(doc.page_content[:500] + "...")
-                else:
-                    st.info("No relevant context found.")
-
-            # Generate responses from selected models
-            for model in selected_models:
-                with st.chat_message("assistant"):
-                    st.markdown(f"*Response from {model}:*")
-                    with st.spinner(f"Asking {model}..."):
-                        chain = get_chain(model, temperature)
-                        response, sources = ask_question(
-                            chain, prompt, context_text, 
-                            chat_history=st.session_state.multimodal_conversation_history, 
-                            final_docs=final_docs
-                        )
-                        st.write(response)
+            # 2. Generate Response
+            if not selected_models:
+                st.error("Please select at least one model.")
+            else:
+                # Use the first selected model for now (or loop through them)
+                model = selected_models[0] 
+                st.markdown(f"**🤖 {model}**")
                 
-                st.session_state.multimodal_messages.append({"role": "assistant", "content": response})
-                
-                # Update conversation history
-                MAX_HISTORY_CHARS = 1500
-                st.session_state.multimodal_conversation_history += f"\nUser: {prompt}\nAssistant ({model}): {response}"
-                if len(st.session_state.multimodal_conversation_history) > MAX_HISTORY_CHARS:
-                    st.session_state.multimodal_conversation_history = st.session_state.multimodal_conversation_history[-(MAX_HISTORY_CHARS // 2):]
-
-                # Show sources with images
-                if sources:
-                    with st.expander(f"Sources for {model}"):
-                        for i, doc in enumerate(sources):
-                            if hasattr(doc, 'metadata') and doc.metadata.get('type') == 'image':
-                                st.markdown(f"**🖼️ Image Source {i+1}:**")
-                                image_data = doc.metadata.get('image_data')
-                                if image_data:
-                                    col1, col2 = st.columns([1, 3])
-                                    with col1:
-                                        st.image(image_data['image'], width=100)
-                                    with col2:
-                                        st.text(doc.page_content[:200] + "...")
-                            else:
-                                st.markdown(f"**📄 Text Source {i+1}:**")
-                                st.text(doc.page_content[:200] + "...")
-
-else:
-    st.info("Upload a document or provide a URL to get started with multimodal analysis.")
-    if st.session_state.multimodal_last_collection_name is not None:
-        st.session_state.multimodal_last_collection_name = None
-        st.session_state.multimodal_messages = [{"role": "assistant", "content": "Upload a document to begin multimodal analysis."}]
+                try:
+                    chain = get_chain(model, temperature)
+                    response, _ = ask_question(
+                        chain, 
+                        prompt, 
+                        context_text, 
+                        chat_history=st.session_state.multimodal_conversation_history
+                    )
+                    
+                    placeholder.markdown(response)
+                    
+                    # Display retrieved images if relevant
+                    if retrieved_images:
+                        with st.expander("Related Images"):
+                            for img in retrieved_images:
+                                st.image(img, width=300)
+                    
+                    st.session_state.multimodal_messages.append({"role": "assistant", "content": response})
+                    st.session_state.multimodal_conversation_history += f"\nUser: {prompt}\nAssistant: {response}"
+                    
+                except Exception as e:
+                    placeholder.error(f"Error generating response: {e}")
