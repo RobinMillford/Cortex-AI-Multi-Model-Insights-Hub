@@ -7,190 +7,8 @@ st.set_page_config(
 )
 
 # --- Custom CSS for Premium Dark Theme ---
-st.markdown('''
-<style>
-    /* General App Styling */
-    .stApp {
-        background-color: #050505;
-        color: #e0e0e0;
-    }
-    
-    /* Typography */
-    h1, h2, h3 {
-        color: #00ff9d !important; /* Neon Green */
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 600;
-    }
-    
-    p, div, label {
-        font-family: 'Segoe UI', sans-serif;
-        color: #e0e0e0;
-    }
-
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] {
-        background-color: #0a0a0a;
-        border-right: 1px solid #333;
-    }
-
-    /* Main Container */
-    .main-container {
-        padding: 2rem 1rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    
-    /* Hero Section */
-    .hero-section {
-        text-align: center;
-        padding: 3rem 2rem;
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        border-radius: 20px;
-        border: 1px solid #333;
-        margin-bottom: 3rem;
-        box-shadow: 0 8px 32px rgba(0, 255, 157, 0.1);
-    }
-    
-    .main-title {
-        font-size: 3.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 1rem;
-        text-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
-    }
-    
-    .subtitle {
-        font-size: 1.3rem;
-        color: #b0b0b0;
-        margin-bottom: 0.5rem;
-    }
-    
-    .tagline {
-        font-size: 1rem;
-        color: #808080;
-        font-style: italic;
-    }
-    
-    /* Feature Cards */
-    .feature-card {
-        background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-        border: 1px solid #333;
-        border-radius: 15px;
-        padding: 2rem;
-        height: 100%;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .feature-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #00ff9d 0%, #00cc7a 100%);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-8px);
-        border-color: #00ff9d;
-        box-shadow: 0 12px 40px rgba(0, 255, 157, 0.2);
-    }
-    
-    .feature-card:hover::before {
-        transform: scaleX(1);
-    }
-    
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        display: block;
-    }
-    
-    .feature-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #00ff9d;
-        margin-bottom: 1rem;
-    }
-    
-    .feature-description {
-        font-size: 1rem;
-        color: #b0b0b0;
-        line-height: 1.6;
-    }
-    
-    /* Stats Section */
-    .stats-container {
-        display: flex;
-        justify-content: space-around;
-        margin: 3rem 0;
-        padding: 2rem;
-        background-color: #0a0a0a;
-        border-radius: 15px;
-        border: 1px solid #333;
-    }
-    
-    .stat-item {
-        text-align: center;
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #00ff9d;
-        display: block;
-    }
-    
-    .stat-label {
-        font-size: 0.9rem;
-        color: #808080;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Get Started Section */
-    .get-started {
-        text-align: center;
-        margin-top: 3rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        border-radius: 15px;
-        border: 1px solid #333;
-    }
-    
-    .get-started-text {
-        font-size: 1.2rem;
-        color: #e0e0e0;
-        margin-bottom: 1rem;
-    }
-    
-    .arrow-icon {
-        font-size: 2rem;
-        color: #00ff9d;
-        animation: bounce 2s infinite;
-    }
-    
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateX(0);
-        }
-        40% {
-            transform: translateX(-10px);
-        }
-        60% {
-            transform: translateX(-5px);
-        }
-    }
-</style>
-''', unsafe_allow_html=True)
+from styles import apply_custom_css
+apply_custom_css()
 
 # Main Content
 with st.container():
@@ -209,11 +27,11 @@ with st.container():
     st.markdown('''
     <div class="stats-container">
         <div class="stat-item">
-            <span class="stat-number">5</span>
+            <span class="stat-number">5+</span>
             <span class="stat-label">AI Models</span>
         </div>
         <div class="stat-item">
-            <span class="stat-number">3</span>
+            <span class="stat-number">4</span>
             <span class="stat-label">Tools</span>
         </div>
         <div class="stat-item">
@@ -223,8 +41,8 @@ with st.container():
     </div>
     ''', unsafe_allow_html=True)
     
-    # Feature Cards
-    col1, col2, col3 = st.columns(3, gap="large")
+    # Feature Cards - Row 1
+    col1, col2 = st.columns(2, gap="large")
     
     with col1:
         st.markdown('''
@@ -251,7 +69,10 @@ with st.container():
             </p>
         </div>
         ''', unsafe_allow_html=True)
-        
+    
+    # Feature Cards - Row 2
+    col3, col4 = st.columns(2, gap="large")
+    
     with col3:
         st.markdown('''
         <div class="feature-card">
@@ -261,6 +82,19 @@ with st.container():
                 Advanced document analysis that understands both text AND images. 
                 Analyze charts, graphs, infographics, and visual content alongside text 
                 for comprehensive, multimodal insights.
+            </p>
+        </div>
+        ''', unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown('''
+        <div class="feature-card">
+            <span class="feature-icon">📺</span>
+            <h2 class="feature-title">YouTube Analyst</h2>
+            <p class="feature-description">
+                Transform YouTube videos into interactive knowledge bases. Extract transcripts, 
+                generate summaries, and chat with video content using AI-powered analysis 
+                for deeper understanding and insights.
             </p>
         </div>
         ''', unsafe_allow_html=True)

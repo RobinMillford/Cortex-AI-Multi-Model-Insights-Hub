@@ -139,3 +139,6 @@ faiss-cpu
 tavily-python
 langchain-chroma
 langchain-huggingface
+youtube-transcript-api
+edge-tts
+asyncio

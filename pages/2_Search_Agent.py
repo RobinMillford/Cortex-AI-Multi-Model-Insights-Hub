@@ -10,6 +10,12 @@ from typing_extensions import TypedDict
 from typing import Annotated
 from langgraph.graph.message import add_messages
 import os
+# --- Model & Settings Data ---
+from config import MODELS as models
+# --- Text-to-Speech Logic ---
+import asyncio
+import edge_tts
+import tempfile
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -19,97 +25,8 @@ st.set_page_config(
 )
 
 # --- Custom CSS for Premium Dark Theme ---
-st.markdown('''
-<style>
-    /* General App Styling */
-    .stApp {
-        background-color: #050505;
-        color: #e0e0e0;
-    }
-    
-    /* Typography */
-    h1, h2, h3 {
-        color: #00ff9d !important; /* Neon Green */
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 600;
-    }
-    
-    p, div, label {
-        font-family: 'Segoe UI', sans-serif;
-        color: #e0e0e0;
-    }
-
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] {
-        background-color: #0a0a0a;
-        border-right: 1px solid #333;
-    }
-
-    /* Input Fields */
-    .stTextInput > div > div > input {
-        background-color: #1a1a1a;
-        color: #ffffff;
-        border: 1px solid #333;
-        border-radius: 8px;
-    }
-    .stTextInput > div > div > input:focus {
-        border-color: #00ff9d;
-        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
-    }
-
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(45deg, #00ff9d, #00cc7a);
-        color: #000000;
-        font-weight: bold;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        transition: all 0.3s ease;
-    }
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
-    }
-
-    /* Chat Messages */
-    .stChatMessage {
-        background-color: #111;
-        border: 1px solid #333;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    [data-testid="stChatMessageContent"] {
-        color: #e0e0e0;
-    }
-    
-    /* User Message Accent */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
-        border-left: 4px solid #00ff9d;
-    }
-    
-    /* Assistant Message Accent */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
-        border-left: 4px solid #00b8ff;
-    }
-
-    /* Expanders */
-    .streamlit-expanderHeader {
-        background-color: #1a1a1a;
-        border-radius: 8px;
-        color: #00ff9d;
-    }
-    
-    /* Success/Info Messages */
-    .stSuccess, .stInfo {
-        background-color: #1a1a1a;
-        color: #e0e0e0;
-        border-left: 4px solid #00ff9d;
-    }
-</style>
-''', unsafe_allow_html=True)
+from styles import apply_custom_css
+apply_custom_css()
 
 # --- Environment & API Setup ---
 load_dotenv()
@@ -126,14 +43,7 @@ tools = [
     TavilySearchResults(max_results=5, search_depth="advanced")
 ]
 
-# --- Model & Settings Data ---
-models = {
-    "llama-3.3-70b-versatile": {"advantages": "High accuracy in diverse scenarios.", "disadvantages": "Lower throughput.", "provider": "Meta"},
-    "llama-3.1-8b-instant": {"advantages": "High-speed for real-time apps.", "disadvantages": "Less accurate for complex tasks.", "provider": "Meta"},
-    "meta-llama/llama-guard-4-12b": {"advantages": "Optimized for safety and guardrailing.", "disadvantages": "Specialized for safety, not general chat.", "provider": "Meta"},
-    "openai/gpt-oss-120b": {"advantages": "120B params, browser search, code execution.", "disadvantages": "Slower speed.", "provider": "OpenAI"},
-    "openai/gpt-oss-20b": {"advantages": "20B params, browser search, code execution.", "disadvantages": "Smaller model.", "provider": "OpenAI"},
-}
+
 
 # --- Sidebar UI ---
 with st.sidebar:
@@ -223,3 +133,25 @@ if prompt := st.chat_input("Ask anything..."):
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
+async def generate_audio(text):
+    communicate = edge_tts.Communicate(text, "en-US-AriaNeural")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+        await communicate.save(fp.name)
+        return fp.name
+
+def play_audio(text):
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_file = loop.run_until_complete(generate_audio(text))
+        st.audio(audio_file, format="audio/mp3")
+    except Exception as e:
+        st.error(f"Error generating audio: {e}")
+
+# Add Read Aloud button to the latest message if it's from the assistant
+if st.session_state.search_state["messages"]:
+    latest_message = st.session_state.search_state["messages"][-1]
+    if latest_message.type == "ai":
+        if st.button("🔊 Read Aloud"):
+            play_audio(latest_message.content)

@@ -23,101 +23,334 @@ st.set_page_config(
 # --- Custom CSS for Premium Dark Theme ---
 st.markdown('''
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
     /* General App Styling */
     .stApp {
-        background-color: #050505;
-        color: #e0e0e0;
+        background: linear-gradient(135deg, #0a0a0a 0%, #050505 50%, #0d0d0d 100%);
+        color: #e8e8e8;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
     }
     
     /* Typography */
-    h1, h2, h3 {
-        color: #00ff9d !important; /* Neon Green */
-        font-family: 'Segoe UI', sans-serif;
+    h1 {
+        background: linear-gradient(135deg, #00ff9d 0%, #00d4aa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        text-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
+    }
+    
+    h2, h3 {
+        color: #00ff9d !important;
+        font-family: 'Inter', sans-serif;
         font-weight: 600;
+        letter-spacing: -0.3px;
     }
     
     p, div, label {
-        font-family: 'Segoe UI', sans-serif;
-        color: #e0e0e0;
+        font-family: 'Inter', sans-serif;
+        color: #e8e8e8;
+        font-weight: 400;
     }
 
-    /* Sidebar Styling */
+    /* Sidebar Styling with Glassmorphism */
     [data-testid="stSidebar"] {
-        background-color: #0a0a0a;
-        border-right: 1px solid #333;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(0, 255, 157, 0.1);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    }
+    
+    [data-testid="stSidebar"] > div:first-child {
+        background: transparent;
     }
 
     /* Input Fields */
-    .stTextInput > div > div > input {
-        background-color: #1a1a1a;
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea {
+        background: rgba(26, 26, 26, 0.8);
         color: #ffffff;
-        border: 1px solid #333;
-        border-radius: 8px;
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 12px 16px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: 'Inter', sans-serif;
     }
-    .stTextInput > div > div > input:focus {
+    
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
         border-color: #00ff9d;
-        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+        box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.15),
+                    0 0 20px rgba(0, 255, 157, 0.2);
+        background: rgba(26, 26, 26, 1);
+        transform: translateY(-1px);
     }
 
-    /* Buttons */
+    /* Buttons with Enhanced Gradient */
     .stButton > button {
-        background: linear-gradient(45deg, #00ff9d, #00cc7a);
+        background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
         color: #000000;
-        font-weight: bold;
+        font-weight: 600;
         border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        padding: 12px 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0, 255, 157, 0.2);
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.3px;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 255, 157, 0.4);
+        background: linear-gradient(135deg, #00ffaa 0%, #00d47a 100%);
+    }
+    
+    .stButton > button:active {
+        transform: translateY(-1px);
+    }
+
+    /* Chat Messages with Glassmorphism */
+    .stChatMessage {
+        background: rgba(17, 17, 17, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
     }
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+    
+    .stChatMessage:hover {
+        background: rgba(17, 17, 17, 0.8);
+        border-color: rgba(0, 255, 157, 0.2);
+        transform: translateX(4px);
     }
-
-    /* Chat Messages */
-    .stChatMessage {
-        background-color: #111;
-        border: 1px solid #333;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
+    
     [data-testid="stChatMessageContent"] {
-        color: #e0e0e0;
+        color: #e8e8e8;
+        line-height: 1.6;
     }
     
-    /* User Message Accent */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
-        border-left: 4px solid #00ff9d;
+    /* User Message with Neon Accent */
+    .stChatMessage[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+        border-left: 3px solid #00ff9d;
+        background: linear-gradient(90deg, rgba(0, 255, 157, 0.05) 0%, rgba(17, 17, 17, 0.6) 100%);
     }
     
-    /* Assistant Message Accent */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
-        border-left: 4px solid #00b8ff;
+    /* Assistant Message with Blue Accent */
+    .stChatMessage[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+        border-left: 3px solid #00b8ff;
+        background: linear-gradient(90deg, rgba(0, 184, 255, 0.05) 0%, rgba(17, 17, 17, 0.6) 100%);
     }
 
-    /* Expanders */
+    /* Chat Input */
+    .stChatInputContainer {
+        border-top: 1px solid rgba(0, 255, 157, 0.1);
+        background: rgba(10, 10, 10, 0.8);
+        backdrop-filter: blur(10px);
+    }
+
+    /* Expanders with Enhanced Style */
     .streamlit-expanderHeader {
-        background-color: #1a1a1a;
-        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
+        border: 1px solid rgba(0, 255, 157, 0.2);
+        border-radius: 12px;
         color: #00ff9d;
+        font-weight: 500;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
     }
     
-    /* Success/Info Messages */
-    .stSuccess, .stInfo {
-        background-color: #1a1a1a;
-        color: #e0e0e0;
+    .streamlit-expanderHeader:hover {
+        background: linear-gradient(135deg, rgba(0, 255, 157, 0.1) 0%, rgba(20, 20, 20, 0.9) 100%);
+        border-color: #00ff9d;
+        box-shadow: 0 4px 12px rgba(0, 255, 157, 0.15);
+    }
+    
+    .streamlit-expanderContent {
+        background: rgba(15, 15, 15, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+    }
+    
+    /* Success/Info/Warning Messages */
+    .stSuccess {
+        background: linear-gradient(135deg, rgba(0, 255, 157, 0.1) 0%, rgba(0, 204, 122, 0.05) 100%);
+        color: #e8e8e8;
         border-left: 4px solid #00ff9d;
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.1);
     }
     
-    /* Image Container */
+    .stInfo {
+        background: linear-gradient(135deg, rgba(0, 184, 255, 0.1) 0%, rgba(0, 150, 255, 0.05) 100%);
+        color: #e8e8e8;
+        border-left: 4px solid #00b8ff;
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 2px 8px rgba(0, 184, 255, 0.1);
+    }
+    
+    .stWarning {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%);
+        color: #e8e8e8;
+        border-left: 4px solid #ffc107;
+        border-radius: 8px;
+        padding: 12px 16px;
+    }
+    
+    .stError {
+        background: linear-gradient(135deg, rgba(255, 82, 82, 0.1) 0%, rgba(255, 23, 68, 0.05) 100%);
+        color: #e8e8e8;
+        border-left: 4px solid #ff5252;
+        border-radius: 8px;
+        padding: 12px 16px;
+    }
+    
+    /* Image Container with Glow Effect */
     .image-container {
-        border: 2px solid #00ff9d;
-        border-radius: 10px;
-        padding: 10px;
-        margin: 10px 0;
-        background-color: #111;
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 16px;
+        padding: 16px;
+        margin: 16px 0;
+        background: linear-gradient(135deg, rgba(17, 17, 17, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%);
+        box-shadow: 0 4px 20px rgba(0, 255, 157, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .image-container:hover {
+        border-color: #00ff9d;
+        box-shadow: 0 8px 30px rgba(0, 255, 157, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    /* Select Boxes and Dropdowns */
+    .stSelectbox > div > div {
+        background: rgba(26, 26, 26, 0.8);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .stSelectbox > div > div:hover {
+        border-color: rgba(0, 255, 157, 0.5);
+    }
+    
+    /* Sliders */
+    .stSlider > div > div > div {
+        background: rgba(0, 255, 157, 0.2);
+    }
+    
+    .stSlider > div > div > div > div {
+        background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
+        box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+    }
+    
+    /* Checkboxes */
+    .stCheckbox > label {
+        font-weight: 500;
+    }
+    
+    /* File Uploader */
+    [data-testid="stFileUploader"] {
+        background: rgba(26, 26, 26, 0.6);
+        border: 2px dashed rgba(0, 255, 157, 0.3);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+    
+    [data-testid="stFileUploader"]:hover {
+        border-color: #00ff9d;
+        background: rgba(26, 26, 26, 0.8);
+        box-shadow: 0 4px 20px rgba(0, 255, 157, 0.1);
+    }
+    
+    /* Progress Bar */
+    .stProgress > div > div > div {
+        background: linear-gradient(90deg, #00ff9d 0%, #00cc7a 100%);
+        box-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
+    }
+    
+    /* Spinner */
+    .stSpinner > div {
+        border-top-color: #00ff9d !important;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(10, 10, 10, 0.5);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #00ffaa 0%, #00d47a 100%);
+    }
+    
+    /* Markdown Content */
+    .stMarkdown {
+        color: #e8e8e8;
+    }
+    
+    .stMarkdown a {
+        color: #00ff9d;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .stMarkdown a:hover {
+        color: #00ffaa;
+        text-shadow: 0 0 8px rgba(0, 255, 157, 0.5);
+    }
+    
+    /* Code Blocks */
+    code {
+        background: rgba(0, 255, 157, 0.1);
+        color: #00ff9d;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Consolas', 'Monaco', monospace;
+    }
+    
+    pre {
+        background: rgba(15, 15, 15, 0.8);
+        border: 1px solid rgba(0, 255, 157, 0.2);
+        border-radius: 12px;
+        padding: 16px;
+    }
+    
+    /* Animations */
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.2); }
+        50% { box-shadow: 0 0 20px rgba(0, 255, 157, 0.4); }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .stChatMessage {
+        animation: fadeIn 0.3s ease-out;
     }
 </style>
 ''', unsafe_allow_html=True)

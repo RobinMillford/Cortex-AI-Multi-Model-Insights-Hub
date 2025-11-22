@@ -2,13 +2,21 @@
 
 🤖 **Advanced AI-Powered Document Analysis with Multimodal RAG Capabilities**
 
-Cortex AI Hub integrates multiple Large Language Models (LLMs) with a sophisticated **Multimodal Retrieve-and-Generate (RAG)** system, enabling you to extract insights from both **text and visual content** in documents.
+Cortex AI Hub integrates multiple Large Language Models (LLMs) with a sophisticated **Multimodal Retrieve-and-Generate (RAG)** system, enabling you to extract insights from **text, visual content, and video transcripts**.
 
-**✨ NEW: Premium Dark Theme UI** - Modern, sleek interface with neon green accents and smooth animations!
+**✨ NEW: Premium Dark Theme UI with Glassmorphism** - Modern, sleek interface with neon green accents, smooth animations, and frosted glass effects!
 
 ---
 
 ## 🌟 **Key Features**
+
+### 📺 **YouTube Analyst** ⭐ NEW!
+
+- **🎬 Video Transcript Extraction**: Automatically fetch YouTube video transcripts
+- **📝 AI-Powered Summaries**: Generate comprehensive video summaries with key takeaways
+- **💬 Interactive Chat**: Ask questions about video content using RAG technology
+- **🔍 Hybrid Search**: Semantic + keyword search across video transcripts
+- **⚡ Real-Time Analysis**: Instant insights from any YouTube video
 
 ### 🖼️ **Multimodal RAG**
 
@@ -30,13 +38,15 @@ Cortex AI Hub integrates multiple Large Language Models (LLMs) with a sophistica
 - **🌐 Real-Time Research**: ArXiv, Wikipedia, and Tavily web search tools
 - **📰 Current Information**: Up-to-date news and research insights
 - **⚡ Instant Responses**: Fast, context-aware answers
+- **🔊 Text-to-Speech**: Read aloud feature using Edge TTS (en-US-AriaNeural voice)
 
 ### 🎨 **Premium UI/UX**
 
-- **🌙 Dark Theme**: Sleek dark interface with neon green accents
+- **🌙 Glassmorphic Dark Theme**: Sleek dark interface with frosted glass effects
 - **✨ Smooth Animations**: Hover effects, transitions, and micro-animations
+- **🎨 Modern Typography**: Inter font family with gradient text effects
 - **📱 Responsive Design**: Works beautifully on all screen sizes
-- **🎯 Modern Typography**: Clean, professional Segoe UI font
+- **💫 Neon Accents**: Eye-catching neon green highlights
 
 ---
 
@@ -143,6 +153,15 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ## 📖 **Usage Guide**
 
+### 📺 **YouTube Video Analysis** ⭐ NEW!
+
+1. Navigate to **"YouTube Analyst"** page
+2. Paste a YouTube URL in the sidebar
+3. Click **"Analyze Video"** to extract transcript
+4. View auto-generated summary
+5. Ask questions about the video content
+6. Get AI-powered insights with context from the transcript
+
 ### 🖼️ **Multimodal Document Analysis**
 
 1. Navigate to **"Multimodal RAG"** page
@@ -170,13 +189,15 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ## 🛠️ **Technology Stack**
 
-- **Frontend**: Streamlit with premium dark theme
+- **Frontend**: Streamlit with premium glassmorphic dark theme
 - **Backend**: Python, LangChain/LangGraph
 - **Vector DB**: ChromaDB (text embeddings)
 - **Embeddings**: HuggingFace sentence-transformers
 - **Vision**: BLIP, BLIP-2, GIT (Hugging Face Transformers)
 - **LLMs**: Groq API (Meta Llama, OpenAI models)
 - **Search**: Tavily, ArXiv, Wikipedia APIs
+- **Video**: YouTube Transcript API
+- **Text-to-Speech**: Edge TTS (Microsoft Azure Neural Voices)
 
 ### 📁 **Project Structure**
 
@@ -185,10 +206,13 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 ├── multimodal_helpers.py        # Multimodal processing utilities
 ├── helpers.py                   # Text processing utilities
 ├── chain_setup.py               # LLM configuration
+├── styles.py                    # Premium dark theme CSS
+├── config.py                    # Model configurations
 ├── pages/
 │   ├── 1_RAG_Chatbot.py        # Traditional RAG interface
 │   ├── 2_Search_Agent.py       # Web search agent
-│   └── 3_Multimodal_RAG.py     # Multimodal interface
+│   ├── 3_Multimodal_RAG.py     # Multimodal interface
+│   └── 4_YouTube_Analyst.py    # YouTube video analysis ⭐ NEW!
 ├── chroma_db/                   # Text vector storage
 ├── multimodal_stores/           # Multimodal embeddings storage
 └── requirements.txt             # Python dependencies
@@ -200,11 +224,12 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ### 🧠 **Architecture Highlights**
 
+- **YouTube Integration**: Transcript extraction with RAG-powered Q&A
 - **Two-Layer Vision**: Vision models → descriptions, embeddings → search
 - **Hybrid Search**: Semantic + BM25 for optimal retrieval
 - **Model Caching**: Global cache prevents reloading
 - **Session Management**: Streamlit state for persistence
-- **No SQLite Dependencies**: Removed pysqlite3-binary for better compatibility
+- **Glassmorphism UI**: Backdrop blur and frosted glass effects
 
 ### ⚡ **Performance Optimizations**
 
@@ -213,20 +238,34 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 - Lazy loading when needed
 - Real-time progress feedback
 - Efficient pickle-based storage
+- Optimized ChromaDB collection naming
 
 ### 🎨 **UI/UX Enhancements**
 
-- Premium dark theme with neon green accents
-- Smooth hover animations and transitions
-- Gradient backgrounds and glowing effects
-- Modern card-based layouts
-- Responsive design for all devices
+- **Glassmorphic Design**: Frosted glass effects with backdrop blur
+- **Gradient Text Effects**: Animated gradient titles
+- **Smooth Animations**: Cubic-bezier transitions
+- **Neon Glow Effects**: Interactive hover states
+- **Modern Typography**: Inter font family
+- **Custom Scrollbars**: Styled with gradient effects
+- **Enhanced Components**: Buttons, inputs, expanders, and more
 
 ---
 
 ## 📝 **Recent Updates**
 
-### ✨ Version 2.0 (Latest)
+### ✨ Version 3.0 (Latest)
+
+- **📺 YouTube Analyst**: NEW feature for video transcript analysis and chat
+- **🔊 Text-to-Speech**: Read aloud feature in Search Agent using Edge TTS
+- **🎨 Glassmorphic UI**: Complete redesign with frosted glass effects
+- **🔤 Inter Font**: Modern typography with gradient text effects
+- **✨ Enhanced Animations**: Smooth cubic-bezier transitions
+- **🎯 Improved Components**: All UI elements redesigned
+- **📊 Updated Main Page**: 2x2 grid layout for 4 tools
+- **🔧 CSS Centralization**: Unified styles.py for consistency
+
+### ✨ Version 2.0
 
 - **🎨 Premium Dark Theme**: Complete UI overhaul with modern design
 - **🤖 Updated Model List**: Added llama-guard-4-12b, removed deprecated models
@@ -247,6 +286,7 @@ _Enhanced multimodal workflow combining text and visual content analysis_
 
 ### 🎯 **Areas for Contribution**
 
+- 📺 Enhanced video analysis features
 - 🖼️ New vision models or analysis techniques
 - 🔍 Better retrieval algorithms
 - 🎨 UI/UX improvements
@@ -277,7 +317,8 @@ This project is licensed under the **AGPL-3.0 License**.
 - **⚡ Groq**: Fast LLM inference
 - **🌐 Streamlit**: Amazing app framework
 - **🔎 Tavily**: Advanced web search API
+- **📺 YouTube Transcript API**: Video transcript extraction
 
 ---
 
-**Made with ❤️ by the Cortex AI Team**
+**Made with ❤️ by Yamin Hossain**
